@@ -1,0 +1,44 @@
+import numpy as np
+
+
+class QLearning:
+    def __init__(self, states, actions, learning_rate=0.8, discount_factor=0.8, epsilon=0.7):
+        self.states = states
+        self.actions = actions
+        self.lr = learning_rate
+        self.gamma = discount_factor
+        self.epsilon = epsilon
+        self.n_states = len(states)
+        self.n_actions = len(actions)
+        self.qtable = self.initialize_qtable()
+
+    def initialize_qtable(self):
+        return np.zeros((self.n_states, self.n_actions))
+
+    def get_action(self, state):
+        r = np.random.rand()
+        if r > self.epsilon:
+            action_index = np.random.randint(self.n_actions)
+        else:
+            state_index = self.states.index(state)
+            action_index = np.argmax(self.qtable[state_index])
+        return self.actions[action_index]
+
+    def update_qtable(self, current_state, next_state, action, reward):
+        current_state_id = self.states.index(current_state)
+        next_state_id = self.states.index(next_state)
+        action_id = self.actions.index(action)
+        new_value = (1 - self.lr) * self.qtable[current_state_id][action_id]
+        new_value = new_value + self.lr * (reward + self.gamma * (np.max(self.qtable[next_state_id])))
+        self.qtable[current_state_id][action_id] = new_value
+
+if __name__ == '__main__':
+    states = ['a', 'b', 'c', 'd', 'e']
+    actions = ['up', 'down', 'right', 'left']
+    ql = QLearning(states, actions)
+    print(ql.qtable)
+
+    action = ql.get_action('a')
+    print(action)
+    ql.update_qtable('a', 'b', action, 1)
+    print(ql.qtable)
