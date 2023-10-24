@@ -3,15 +3,14 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class DifferentialEvolution:
-    def __init__(self, dimension, FuncNum, population_size, F, cr, select_type='random', crossover_type='bin', n_pairs=1):
+    def __init__(self, dimension, FuncNum, population_size, F, cr, mutation_type='random', crossover_type='bin'):
         self.D = dimension
         self.cec = cec2022_func(FuncNum)
         self.population_size = population_size
         self.F = F
         self.cr = cr
-        self.select_type = select_type
+        self.mutation_type = mutation_type
         self.crossover_type = crossover_type
-        self.n_pairs = n_pairs
         self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf
@@ -21,12 +20,21 @@ class DifferentialEvolution:
     def initializePopulation(self):
         return 200.0 * np.random.rand(self.population_size, self.D) - 100.0
 
-    def select(self, type='random'):
+    def mutation(self, type='best', current=None):
         if type == 'random':
-            index = np.random.randint(0, self.population_size)
+            idxs = np.random.randint(0, self.population_size, 3)
+            mutant = self.difference(self.population[idxs[0]], self.population[idxs[1]], self.population[idxs[2]])
         if type == 'best':
-            index = np.argmin(self.scores)
-        return self.population[index]
+            idxs = np.random.randint(0, self.population_size, 2)
+            curr_best = np.argmin(self.scores)
+            mutant = self.difference(self.population[curr_best], self.population[idxs[0]], self.population[idxs[1]])
+        if type == 'current-to-best':
+            idxs = np.random.randint(0, self.population_size, 2)
+            curr_best = np.argmin(self.scores)
+            # mutant = self.difference(self.population[current], self.population[idxs[0]], self.population[idxs[1]])
+            # mutant = self.difference(mutant, self.population[curr_best], self.population[current])
+            mutant = self.difference(self.difference(self.population[current], self.population[curr_best], self.population[current]), self.population[idxs[0]], self.population[idxs[1]])
+        return mutant
 
     def difference(self, a, b, c):
         return [a[i] + self.F * (b[i] - c[i]) for i in range(self.D)]
@@ -83,12 +91,10 @@ class DifferentialEvolution:
         new_population = []
 
         for i in range(self.population_size):
-            current = self.select(self.select_type)
-            mutant = current
-            for i in range(self.n_pairs):
-                first = self.select(type='random')
-                second = self.select(type='random')
-                mutant = self.difference(mutant, first, second)
+            if self.mutation_type == 'current-to-best':
+                mutant = self.mutation(self.mutation_type, i)
+            else:
+                mutant = self.mutation(self.mutation_type)
             candidate = self.crossover(mutant, self.population[i])
             if self.evaluate(candidate) <= self.scores[i]:
                 new_population.append(candidate)
@@ -97,3 +103,4 @@ class DifferentialEvolution:
 
         self.population = new_population
         self.evaluate_population()
+
