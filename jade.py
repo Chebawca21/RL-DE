@@ -48,6 +48,22 @@ class JADE(DifferentialEvolution):
 
         return c
 
+    def generate_F(self):
+        F = -1
+        while F <= 0:
+            F = cauchy.rvs(self.mean_F, 0.1)
+        if F > 1:
+            F = 1
+        return F
+
+    def generate_cr(self):
+        cr = -1
+        while cr <= 0:
+            cr = np.random.normal(self.mean_cr, 0.1)
+        if cr > 1:
+            cr = 1
+        return cr
+
     def lehmer_mean(self, list):
         if not list:
             return 0
@@ -63,8 +79,8 @@ class JADE(DifferentialEvolution):
         S_F, S_cr = [], []
 
         for i in range(self.population_size):
-            F = cauchy.rvs(self.mean_F, 0.1)
-            cr = np.random.normal(self.mean_cr, 0.1)
+            F = self.generate_F()
+            cr = self.generate_cr()
 
             mutant = self.mutation(i, F)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
