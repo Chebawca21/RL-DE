@@ -3,13 +3,14 @@ import numpy as np
 from joblib import Parallel, delayed
 from de import DifferentialEvolution
 from jade import JADE
+from shade import SHADE
 
 MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
-N_RUNS = 5
+N_RUNS = 30
 
 D = 10
-FUNC_NUM = 3
+FUNC_NUM = 8
 POPULATION_SIZE = 50
 
 # Differential Evolution
@@ -22,6 +23,10 @@ CROSSOVER_TYPE = 'bin'
 ARCHIVE_SIZE = POPULATION_SIZE
 P = 0.1
 C = 0.1
+
+# SHADE
+MEMORY_SIZE = POPULATION_SIZE
+ARCHIVE_SIZE = POPULATION_SIZE
 
 N_JOBS = -1
 
@@ -42,6 +47,14 @@ def train_jade(max_fes):
         jade.step()
     return jade.best_score
 
+def train_shade(max_fes):
+    shade = SHADE(D, FUNC_NUM, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
+    for _ in range(int(max_fes / (POPULATION_SIZE * 2))):
+        if shade.func_evals + (2 * POPULATION_SIZE) > max_fes:
+            break
+        shade.step()
+    return shade.best_score
+
 
 if __name__ == '__main__':
     if D == 10:
@@ -52,7 +65,7 @@ if __name__ == '__main__':
         max_fes = 0
 
     start = time.perf_counter()
-    scores = Parallel(n_jobs=N_JOBS)(delayed(train_de)(max_fes) for _ in range(N_RUNS))
+    scores = Parallel(n_jobs=N_JOBS)(delayed(train_shade)(max_fes) for _ in range(N_RUNS))
     end = time.perf_counter()
 
     scores = np.array(scores)

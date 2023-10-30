@@ -21,14 +21,14 @@ class JADE(DifferentialEvolution):
         self.archive = []
         self.evaluate_population()
 
-    def mutation(self, current, F):
+    def mutation(self, current, F, p):
         idx0 = np.random.randint(0, self.population_size)
         if not self.archive:
             pop_and_arch = np.concatenate((self.population, np.reshape([], (0, self.D))))
         else:
             pop_and_arch = np.concatenate((self.population, self.archive))
         idx1 = np.random.randint(0, len(pop_and_arch))
-        p_best_idxs = self.scores.argsort()[:self.p]
+        p_best_idxs = self.scores.argsort()[:p]
         p_best = np.random.randint(0, len(p_best_idxs))
         mutant = self.difference(self.population[current], self.population[p_best_idxs[p_best]], self.population[current], F)
         mutant = self.difference(mutant, self.population[idx0], pop_and_arch[idx1], F)
@@ -82,7 +82,7 @@ class JADE(DifferentialEvolution):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            mutant = self.mutation(i, F)
+            mutant = self.mutation(i, F, self.p)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             if self.evaluate(candidate) <= self.scores[i]:
                 new_population.append(candidate)
