@@ -34,20 +34,6 @@ class JADE(DifferentialEvolution):
         mutant = self.difference(mutant, self.population[idx0], pop_and_arch[idx1], F)
         return mutant
 
-    def difference(self, a, b, c, F):
-        return [a[i] + F * (b[i] - c[i]) for i in range(self.D)]
-
-    def binary_crossover(self, a, b, cr):
-        c = np.zeros(self.D)
-        for i in range(self.D):
-            r = np.random.rand()
-            if r < cr:
-                c[i] = b[i]
-            else:
-                c[i] = a[i]
-
-        return c
-
     def generate_F(self):
         F = -1
         while F <= 0:

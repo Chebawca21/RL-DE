@@ -23,47 +23,47 @@ class DifferentialEvolution:
     def mutation(self, type='best', current=None):
         if type == 'random':
             idxs = np.random.randint(0, self.population_size, 3)
-            mutant = self.difference(self.population[idxs[0]], self.population[idxs[1]], self.population[idxs[2]])
+            mutant = self.difference(self.population[idxs[0]], self.population[idxs[1]], self.population[idxs[2]], self.F)
         if type == 'best':
             idxs = np.random.randint(0, self.population_size, 2)
             curr_best = np.argmin(self.scores)
-            mutant = self.difference(self.population[curr_best], self.population[idxs[0]], self.population[idxs[1]])
+            mutant = self.difference(self.population[curr_best], self.population[idxs[0]], self.population[idxs[1]], self.F)
         if type == 'current-to-best':
             idxs = np.random.randint(0, self.population_size, 2)
             curr_best = np.argmin(self.scores)
             # mutant = self.difference(self.population[current], self.population[idxs[0]], self.population[idxs[1]])
             # mutant = self.difference(mutant, self.population[curr_best], self.population[current])
-            mutant = self.difference(self.difference(self.population[current], self.population[curr_best], self.population[current]), self.population[idxs[0]], self.population[idxs[1]])
+            mutant = self.difference(self.difference(self.population[current], self.population[curr_best], self.population[current], self.F), self.population[idxs[0]], self.population[idxs[1]], self.F)
         return mutant
 
-    def difference(self, a, b, c):
-        return [a[i] + self.F * (b[i] - c[i]) for i in range(self.D)]
+    def difference(self, a, b, c, F):
+        return [a[i] + F * (b[i] - c[i]) for i in range(self.D)]
 
-    def crossover(self, a, b, type='bin'):
+    def crossover(self, a, b, cr, type='bin'):
         if type == 'bin':
-            return self.binary_crossover(a, b)
+            return self.binary_crossover(a, b, cr)
         if type == 'exp':
-            return self.exponential_crossover(a, b)
+            return self.exponential_crossover(a, b, cr)
 
-    def binary_crossover(self, a, b):
+    def binary_crossover(self, a, b, cr):
         c = np.zeros(self.D)
         for i in range(self.D):
             r = np.random.rand()
-            if r < self.cr:
+            if r < cr:
                 c[i] = b[i]
             else:
                 c[i] = a[i]
 
         return c
 
-    def exponential_crossover(self, a, b):
+    def exponential_crossover(self, a, b, cr):
         i = np.random.randint(0, self.D)
         copied = 0
         c = a.copy()
         while copied < self.D:
             r = np.random.rand()
             print(r)
-            if r < self.cr:
+            if r < cr:
                 c[i] = b[i]
                 copied = copied + 1
                 i = i + 1
@@ -95,7 +95,7 @@ class DifferentialEvolution:
                 mutant = self.mutation(self.mutation_type, i)
             else:
                 mutant = self.mutation(self.mutation_type)
-            candidate = self.crossover(mutant, self.population[i])
+            candidate = self.crossover(mutant, self.population[i], self.cr, self.crossover_type)
             if self.evaluate(candidate) <= self.scores[i]:
                 new_population.append(candidate)
             else:
