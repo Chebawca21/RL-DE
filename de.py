@@ -81,7 +81,9 @@ class DifferentialEvolution:
     def evaluate_population(self):
         self.func_evals = self.func_evals + self.population_size
         self.scores = self.cec.values(self.population)
+        self.update_best_score()
 
+    def update_best_score(self):
         for i in range(self.population_size):
             if self.scores[i] < self.best_score:
                 self.best_score = self.scores[i]
@@ -89,6 +91,7 @@ class DifferentialEvolution:
 
     def step(self):
         new_population = []
+        new_scores = []
 
         for i in range(self.population_size):
             if self.mutation_type == 'current-to-best':
@@ -96,11 +99,14 @@ class DifferentialEvolution:
             else:
                 mutant = self.mutation(self.mutation_type)
             candidate = self.crossover(mutant, self.population[i], self.cr, self.crossover_type)
-            if self.evaluate(candidate) <= self.scores[i]:
+            candidate_score = self.evaluate(candidate)
+            if candidate_score <= self.scores[i]:
                 new_population.append(candidate)
+                new_scores.append(candidate_score)
             else:
                 new_population.append(self.population[i])
+                new_scores.append(self.scores[i])
 
         self.population = new_population
-        self.evaluate_population()
-
+        self.scores = np.array(new_scores)
+        self.update_best_score()

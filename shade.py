@@ -59,6 +59,7 @@ class SHADE(JADE):
 
     def step(self):
         new_population = []
+        new_scores = []
         S_F, S_cr = [], []
         diffs = []
 
@@ -72,8 +73,10 @@ class SHADE(JADE):
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
                 new_population.append(candidate)
+                new_scores.append(candidate_score)
             else:
                 new_population.append(self.population[i])
+                new_scores.append(self.scores[i])
             if candidate_score < self.scores[i]:
                 self.archive.append(self.population[i])
                 diffs.append(self.scores[i] - candidate_score)
@@ -90,4 +93,5 @@ class SHADE(JADE):
             if self.k >= self.memory_size:
                 self.k = 0
         self.population = new_population
-        self.evaluate_population()
+        self.scores = np.array(new_scores)
+        self.update_best_score()

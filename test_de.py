@@ -33,24 +33,24 @@ N_JOBS = -1
 
 def train_de(max_fes):
     de = DifferentialEvolution(D, FUNC_NUM, POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
-    for _ in range(int(max_fes / (POPULATION_SIZE * 2))):
-        if de.func_evals + (2 * POPULATION_SIZE) > max_fes:
+    for _ in range(int(max_fes / POPULATION_SIZE)):
+        if de.func_evals + POPULATION_SIZE > max_fes:
             break
         de.step()
     return de.best_score
 
 def train_jade(max_fes):
     jade = JADE(D, FUNC_NUM, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
-    for _ in range(int(max_fes / (POPULATION_SIZE * 2))):
-        if jade.func_evals + (2 * POPULATION_SIZE) > max_fes:
+    for _ in range(int(max_fes / POPULATION_SIZE)):
+        if jade.func_evals + POPULATION_SIZE > max_fes:
             break
         jade.step()
     return jade.best_score
 
 def train_shade(max_fes):
     shade = SHADE(D, FUNC_NUM, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
-    for _ in range(int(max_fes / (POPULATION_SIZE * 2))):
-        if shade.func_evals + (2 * POPULATION_SIZE) > max_fes:
+    for _ in range(int(max_fes / POPULATION_SIZE)):
+        if shade.func_evals + POPULATION_SIZE > max_fes:
             break
         shade.step()
     return shade.best_score
