@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.stats import cauchy
 from de import DifferentialEvolution
 from SO_BO.CEC2022 import cec2022_func
 
@@ -37,7 +36,8 @@ class JADE(DifferentialEvolution):
     def generate_F(self):
         F = -1
         while F <= 0:
-            F = cauchy.rvs(self.mean_F, 0.1)
+            F = np.random.standard_cauchy()
+            F = self.mean_F + (F * 0.1)
         if F > 1:
             F = 1
         return F

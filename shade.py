@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.stats import cauchy
 from jade import JADE
 from SO_BO.CEC2022 import cec2022_func
 
@@ -25,7 +24,8 @@ class SHADE(JADE):
         F = -1
         r = np.random.randint(0, self.memory_size)
         while F <= 0:
-            F = cauchy.rvs(self.memory_F[r], 0.1)
+            F = np.random.standard_cauchy()
+            F = self.memory_F[r] + (F * 0.1)
         if F > 1:
             F = 1
         return F
