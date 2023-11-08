@@ -4,9 +4,10 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class SHADE(JADE):
-    def __init__(self, dimension, FuncNum, population_size, memory_size, archive_size):
+    def __init__(self, dimension, func_num, population_size, memory_size, archive_size):
         self.D = dimension
-        self.cec = cec2022_func(FuncNum)
+        self.func_num = func_num
+        self.cec = cec2022_func(self.func_num)
         self.population_size = population_size
         self.memory_size = memory_size
         self.memory_F = np.full((self.memory_size, 1), 0.5)

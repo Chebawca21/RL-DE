@@ -5,9 +5,10 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class CDE(DifferentialEvolution):
-    def __init__(self, dimension, FuncNum, population_size, strat_constant, delta):
+    def __init__(self, dimension, func_num, population_size, strat_constant, delta):
         self.D = dimension
-        self.cec = cec2022_func(FuncNum)
+        self.func_num = func_num
+        self.cec = cec2022_func(func_num)
         self.population_size = population_size
         self.n_strategies = 9
         self.F_pool = [0.5, 0.8, 1.0]

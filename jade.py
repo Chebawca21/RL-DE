@@ -4,9 +4,10 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class JADE(DifferentialEvolution):
-    def __init__(self, dimension, FuncNum, population_size, archive_size, p, c):
+    def __init__(self, dimension, func_num, population_size, archive_size, p, c):
         self.D = dimension
-        self.cec = cec2022_func(FuncNum)
+        self.func_num = func_num
+        self.cec = cec2022_func(self.func_num)
         self.population_size = population_size
         self.archive_size = archive_size
         self.mean_F = 0.5
