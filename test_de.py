@@ -2,6 +2,7 @@ import time
 import numpy as np
 from joblib import Parallel, delayed
 from de import DifferentialEvolution
+from cde import CDE
 from jade import JADE
 from shade import SHADE
 
@@ -18,6 +19,10 @@ F = 0.8
 CR = 0.8
 MUTATION_TYPE = 'current-to-best'
 CROSSOVER_TYPE = 'bin'
+
+# CDE
+STRAT_CONSTANT = 2
+DELTA = 1/45
 
 # JADE
 ARCHIVE_SIZE = POPULATION_SIZE
@@ -38,6 +43,14 @@ def train_de(max_fes):
             break
         de.step()
     return de.best_score
+
+def train_cde(max_fes):
+    cde = CDE(D, FUNC_NUM, POPULATION_SIZE, STRAT_CONSTANT, DELTA)
+    for _ in range(int(max_fes / POPULATION_SIZE)):
+        if cde.func_evals + POPULATION_SIZE > max_fes:
+            break
+        cde.step()
+    return cde.best_score
 
 def train_jade(max_fes):
     jade = JADE(D, FUNC_NUM, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
@@ -65,7 +78,7 @@ if __name__ == '__main__':
         max_fes = 0
 
     start = time.perf_counter()
-    scores = Parallel(n_jobs=N_JOBS)(delayed(train_shade)(max_fes) for _ in range(N_RUNS))
+    scores = Parallel(n_jobs=N_JOBS)(delayed(train_cde)(max_fes) for _ in range(N_RUNS))
     end = time.perf_counter()
 
     scores = np.array(scores)
