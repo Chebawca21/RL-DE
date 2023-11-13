@@ -54,6 +54,10 @@ def get_de(D, func_num, model='de'):
         de = DifferentialEvolution(D, func_num, POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
     elif model == 'cde':
         de = CDE(D, func_num, POPULATION_SIZE, STRAT_CONSTANT, DELTA)
+    elif model == 'jade':
+        de = JADE(D, func_num, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
+    elif model == 'shade':
+        de = SHADE(D, func_num, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
     return de
 
 def single_run(D, func_num, run_id, model='de'):
@@ -94,6 +98,7 @@ def train(Ds, func_nums, model='de'):
     start_total = time.perf_counter()
     for D in Ds:
         results_file_name = f"out/{model}_{D}.txt"
+        results_file_name_tex = f"out/{model}_{D}.tex"
         results = []
         columns = ["Best", "Worst", "Median", "Mean", "Std"]
         index = func_nums
@@ -119,7 +124,8 @@ def train(Ds, func_nums, model='de'):
             std = np.std(scores)
             results.append([best, worst, median, mean, std])
         results = pd.DataFrame(results, columns=columns, index=index)
-        results.to_string(results_file_name, float_format="{:.7f}".format)
+        results.to_string(results_file_name, float_format="{:.8f}".format)
+        results.to_latex(results_file_name_tex, float_format="{:.8f}".format)
     
     start_t0 = time.perf_counter()
     x = 0.55
@@ -135,6 +141,7 @@ def train(Ds, func_nums, model='de'):
     t0 = end_t0 - start_t0
 
     times_file_name = f"out/{model}_times.txt"
+    times_file_name_tex = f"out/{model}_times.tex"
     times = []
     columns = ['T0', "T1", "T2", "(T2 - T1) / T0"]
     index = Ds
@@ -147,7 +154,7 @@ def train(Ds, func_nums, model='de'):
         t1 = end_t1 - start_t1
 
         t2s = []
-        for _ in range(1):
+        for _ in range(5):
             de = get_de(D, 1, model)
             start_t2 = time.perf_counter()
             for _ in range(int(200000 / POPULATION_SIZE)):
@@ -158,6 +165,7 @@ def train(Ds, func_nums, model='de'):
         times.append([t0, t1, t2, (t2 - t1) / t0])
     times = pd.DataFrame(times, columns=columns, index=index)
     times.to_string(times_file_name, float_format="{:.2f}".format)
+    times.to_latex(times_file_name_tex, float_format="{:.2f}".format)
 
     end_total = time.perf_counter()
     print(f"Finished for model {model}", "\n\n", f"Total time: {end_total - start_total} seconds")
