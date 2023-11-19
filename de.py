@@ -38,7 +38,7 @@ class DifferentialEvolution:
         return mutant
 
     def difference(self, a, b, c, F):
-        return [a[i] + F * (b[i] - c[i]) for i in range(self.D)]
+        return np.clip(a + F * (b - c), -100, 100)
 
     def crossover(self, a, b, cr, type='bin'):
         if type == 'bin':
