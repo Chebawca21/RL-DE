@@ -5,13 +5,14 @@ from de import DifferentialEvolution
 from cde import CDE
 from jade import JADE
 from shade import SHADE
+from qde import QDE
 
 MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
 N_RUNS = 30
 
 D = 10
-FUNC_NUM = 8
+FUNC_NUM = 3
 POPULATION_SIZE = 50
 
 # Differential Evolution
@@ -68,6 +69,14 @@ def train_shade(max_fes):
         shade.step()
     return shade.best_score
 
+def train_qde(max_fes):
+    qde = QDE(D, FUNC_NUM, POPULATION_SIZE, MUTATION_TYPE)
+    for _ in range(int(max_fes / POPULATION_SIZE)):
+        if qde.func_evals + POPULATION_SIZE > max_fes:
+            break
+        qde.step()
+    return qde.best_score
+
 
 if __name__ == '__main__':
     if D == 10:
@@ -75,10 +84,10 @@ if __name__ == '__main__':
     elif D == 20:
         max_fes = MAX_FES_20
     else:
-        max_fes = 0
+        max_fes = MAX_FES_10
 
     start = time.perf_counter()
-    scores = Parallel(n_jobs=N_JOBS)(delayed(train_cde)(max_fes) for _ in range(N_RUNS))
+    scores = Parallel(n_jobs=N_JOBS)(delayed(train_qde)(max_fes) for _ in range(N_RUNS))
     end = time.perf_counter()
 
     scores = np.array(scores)

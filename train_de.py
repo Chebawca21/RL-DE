@@ -2,11 +2,11 @@ import time
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from SO_BO.CEC2022 import cec2022_func
 from de import DifferentialEvolution
 from cde import CDE
 from jade import JADE
 from shade import SHADE
+from qde import QDE
 
 MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
@@ -58,6 +58,8 @@ def get_de(D, func_num, model='de'):
         de = JADE(D, func_num, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
     elif model == 'shade':
         de = SHADE(D, func_num, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
+    elif model == 'qde':
+        de = QDE(D, func_num, POPULATION_SIZE, MUTATION_TYPE)
     return de
 
 def single_run(D, func_num, run_id, model='de'):
@@ -173,4 +175,4 @@ def train(Ds, func_nums, model='de'):
 if __name__ == '__main__':
     Ds = [10, 20]
     func_nums = list(range(1, 13))
-    train(Ds, func_nums, 'cde')
+    train(Ds, func_nums, 'qde')
