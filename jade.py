@@ -4,7 +4,7 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class JADE(DifferentialEvolution):
-    def __init__(self, dimension, func_num, population_size, archive_size, p, c):
+    def __init__(self, dimension, func_num, population_size, archive_size, p, c, mutation_type='current-to-pbest'):
         self.D = dimension
         self.func_num = func_num
         self.cec = cec2022_func(self.func_num)
@@ -14,25 +14,13 @@ class JADE(DifferentialEvolution):
         self.mean_cr = 0.5
         self.p = int(p * population_size)
         self.c = c
+        self.mutation_type = mutation_type
         self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf
         self.population = self.initializePopulation()
         self.archive = []
         self.evaluate_population()
-
-    def mutation(self, current, F, p):
-        idx0 = np.random.randint(0, self.population_size)
-        if not self.archive:
-            pop_and_arch = np.concatenate((self.population, np.reshape([], (0, self.D))))
-        else:
-            pop_and_arch = np.concatenate((self.population, self.archive))
-        idx1 = np.random.randint(0, len(pop_and_arch))
-        p_best_idxs = self.scores.argsort()[:p]
-        p_best = np.random.randint(0, len(p_best_idxs))
-        mutant = self.difference(self.population[current], self.population[p_best_idxs[p_best]], self.population[current], F)
-        mutant = self.difference(mutant, self.population[idx0], pop_and_arch[idx1], F)
-        return mutant
 
     def generate_F(self):
         F = -1
@@ -70,7 +58,12 @@ class JADE(DifferentialEvolution):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            mutant = self.mutation(i, F, self.p)
+            if self.mutation_type == 'current-to-best':
+                mutant = self.mutation(F, self.mutation_type, i)
+            elif self.mutation_type == 'current-to-pbest':
+                mutant = self.mutation(F, self.mutation_type, self.p)
+            else:
+                mutant = self.mutation(F, self.mutation_type)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

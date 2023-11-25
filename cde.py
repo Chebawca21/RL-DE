@@ -5,7 +5,7 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class CDE(DifferentialEvolution):
-    def __init__(self, dimension, func_num, population_size, strat_constant, delta, mutation_type='randrl'):
+    def __init__(self, dimension, func_num, population_size, strat_constant, delta, mutation_type='randrl', p=0.1, archive_size=None):
         self.D = dimension
         self.func_num = func_num
         self.cec = cec2022_func(func_num)
@@ -20,6 +20,11 @@ class CDE(DifferentialEvolution):
         self.strat_constant = strat_constant
         self.delta = delta
         self.mutation_type = mutation_type
+        self.p = int(p * population_size)
+        if archive_size is None:
+            self.archive_size = population_size
+        else:
+            self.archive_size = archive_size
         self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf
@@ -63,6 +68,8 @@ class CDE(DifferentialEvolution):
             F, cr = self.strategies[strat_id]
             if self.mutation_type == 'current-to-best':
                 mutant = self.mutation(F, self.mutation_type, i)
+            elif self.mutation_type == 'current-to-pbest':
+                mutant = self.mutation(F, self.mutation_type, self.p)
             else:
                 mutant = self.mutation(F, self.mutation_type)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
@@ -71,10 +78,14 @@ class CDE(DifferentialEvolution):
                 self.strat_succ[strat_id] += 1
                 new_population.append(candidate)
                 new_scores.append(candidate_score)
+                self.archive.append(self.population[i])
             else:
                 new_population.append(self.population[i])
                 new_scores.append(self.scores[i])
 
+        if len(self.archive) > self.archive_size:
+            np.random.shuffle(self.archive)
+            self.archive = self.archive[:self.archive_size]
         self.update_strategies
         self.population = new_population
         self.scores = np.array(new_scores)

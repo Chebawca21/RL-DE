@@ -4,7 +4,7 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class SHADE(JADE):
-    def __init__(self, dimension, func_num, population_size, memory_size, archive_size):
+    def __init__(self, dimension, func_num, population_size, memory_size, archive_size, mutation_type='current-to-pbest'):
         self.D = dimension
         self.func_num = func_num
         self.cec = cec2022_func(self.func_num)
@@ -14,6 +14,7 @@ class SHADE(JADE):
         self.memory_cr = np.full((self.memory_size, 1), 0.5)
         self.k = 0
         self.archive_size = archive_size
+        self.mutation_type = mutation_type
         self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf
@@ -67,9 +68,14 @@ class SHADE(JADE):
         for i in range(self.population_size):
             F = self.generate_F()
             cr = self.generate_cr()
-            p = np.random.randint(2, int(0.2 * self.population_size))
 
-            mutant = self.mutation(i, F, p)
+            if self.mutation_type == 'current-to-best':
+                mutant = self.mutation(F, self.mutation_type, i)
+            elif self.mutation_type == 'current-to-pbest':
+                p = np.random.randint(2, int(0.2 * self.population_size))
+                mutant = self.mutation(F, self.mutation_type, p)
+            else:
+                mutant = self.mutation(F, self.mutation_type)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

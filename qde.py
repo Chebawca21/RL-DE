@@ -5,7 +5,7 @@ from qlearning import QLearning
 from SO_BO.CEC2022 import cec2022_func
 
 class QDE(DifferentialEvolution):
-    def __init__(self, dimension, func_num, population_size, mutation_type='best'):
+    def __init__(self, dimension, func_num, population_size, mutation_type='best', p=0.1, archive_size=None):
         self.D = dimension
         self.func_num = func_num
         self.cec = cec2022_func(self.func_num)
@@ -17,6 +17,11 @@ class QDE(DifferentialEvolution):
         self.state = 0
         self.qlearning = QLearning(states, actions)
         self.mutation_type = mutation_type
+        self.p = int(p * population_size)
+        if archive_size is None:
+            self.archive_size = population_size
+        else:
+            self.archive_size = archive_size
         self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf
@@ -32,6 +37,8 @@ class QDE(DifferentialEvolution):
             F, cr = self.qlearning.get_action(self.state)
             if self.mutation_type == 'current-to-best':
                 mutant = self.mutation(F, self.mutation_type, i)
+            elif self.mutation_type == 'current-to-pbest':
+                mutant = self.mutation(F, self.mutation_type, self.p)
             else:
                 mutant = self.mutation(F, self.mutation_type)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
@@ -40,11 +47,15 @@ class QDE(DifferentialEvolution):
                 self.qlearning.update_qtable(self.state, self.state, (F, cr), 1)
                 new_population.append(candidate)
                 new_scores.append(candidate_score)
+                self.archive.append(self.population[i])
             else:
                 self.qlearning.update_qtable(self.state, self.state, (F, cr), -0.5)
                 new_population.append(self.population[i])
                 new_scores.append(self.scores[i])
 
+        if len(self.archive) > self.archive_size:
+            np.random.shuffle(self.archive)
+            self.archive = self.archive[:self.archive_size]
         self.population = new_population
         self.scores = np.array(new_scores)
         self.update_best_score()
