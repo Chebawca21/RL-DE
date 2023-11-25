@@ -3,7 +3,7 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class DifferentialEvolution:
-    def __init__(self, dimension, func_num, population_size, F, cr, mutation_type='random', crossover_type='bin'):
+    def __init__(self, dimension, func_num, population_size, F, cr, mutation_type='rand', crossover_type='bin'):
         self.D = dimension
         self.func_num = func_num
         self.cec = cec2022_func(self.func_num)
@@ -21,20 +21,23 @@ class DifferentialEvolution:
     def initializePopulation(self):
         return 200.0 * np.random.rand(self.population_size, self.D) - 100.0
 
-    def mutation(self, type='best', current=None):
-        if type == 'random':
+    def mutation(self, F, type='best', current=None):
+        if type == 'rand':
             idxs = np.random.randint(0, self.population_size, 3)
-            mutant = self.difference(self.population[idxs[0]], self.population[idxs[1]], self.population[idxs[2]], self.F)
+            mutant = self.difference(self.population[idxs[0]], self.population[idxs[1]], self.population[idxs[2]], F)
         if type == 'best':
             idxs = np.random.randint(0, self.population_size, 2)
             curr_best = np.argmin(self.scores)
-            mutant = self.difference(self.population[curr_best], self.population[idxs[0]], self.population[idxs[1]], self.F)
+            mutant = self.difference(self.population[curr_best], self.population[idxs[0]], self.population[idxs[1]], F)
         if type == 'current-to-best':
             idxs = np.random.randint(0, self.population_size, 2)
             curr_best = np.argmin(self.scores)
-            # mutant = self.difference(self.population[current], self.population[idxs[0]], self.population[idxs[1]])
-            # mutant = self.difference(mutant, self.population[curr_best], self.population[current])
-            mutant = self.difference(self.difference(self.population[current], self.population[curr_best], self.population[current], self.F), self.population[idxs[0]], self.population[idxs[1]], self.F)
+            mutant = self.difference(self.population[current], self.population[idxs[0]], self.population[idxs[1]], F)
+            mutant = self.difference(mutant, self.population[curr_best], self.population[current], F)
+        if type == 'randrl':
+            idxs = np.random.randint(0, self.population_size, 3)
+            best_id = np.argmin([self.scores[idxs[0]], self.scores[idxs[1]], self.scores[idxs[2]]])
+            mutant = self.difference(self.population[idxs[best_id]], self.population[idxs[1]], self.population[idxs[2]], F)
         return mutant
 
     def difference(self, a, b, c, F):
@@ -96,9 +99,9 @@ class DifferentialEvolution:
 
         for i in range(self.population_size):
             if self.mutation_type == 'current-to-best':
-                mutant = self.mutation(self.mutation_type, i)
+                mutant = self.mutation(self.F, self.mutation_type, i)
             else:
-                mutant = self.mutation(self.mutation_type)
+                mutant = self.mutation(self.F, self.mutation_type)
             candidate = self.crossover(mutant, self.population[i], self.cr, self.crossover_type)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

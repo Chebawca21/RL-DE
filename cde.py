@@ -5,7 +5,7 @@ from SO_BO.CEC2022 import cec2022_func
 
 
 class CDE(DifferentialEvolution):
-    def __init__(self, dimension, func_num, population_size, strat_constant, delta):
+    def __init__(self, dimension, func_num, population_size, strat_constant, delta, mutation_type='randrl'):
         self.D = dimension
         self.func_num = func_num
         self.cec = cec2022_func(func_num)
@@ -19,18 +19,13 @@ class CDE(DifferentialEvolution):
         self.strat_succ = np.zeros(self.n_strategies)
         self.strat_constant = strat_constant
         self.delta = delta
+        self.mutation_type = mutation_type
         self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf
         self.population = self.initializePopulation()
         self.archive = []
         self.evaluate_population()
-
-    def mutation(self, F):
-        idxs = np.random.randint(0, self.population_size, 3)
-        best_id = np.argmin([self.scores[idxs[0]], self.scores[idxs[1]], self.scores[idxs[2]]])
-        mutant = self.difference(self.population[idxs[best_id]], self.population[idxs[1]], self.population[idxs[2]], F)
-        return mutant
 
     def binary_crossover(self, a, b, cr):
         c = np.zeros(self.D)
@@ -66,7 +61,10 @@ class CDE(DifferentialEvolution):
         for i in range(self.population_size):
             strat_id = self.get_strategy()
             F, cr = self.strategies[strat_id]
-            mutant = self.mutation(F)
+            if self.mutation_type == 'current-to-best':
+                mutant = self.mutation(F, self.mutation_type, i)
+            else:
+                mutant = self.mutation(F, self.mutation_type)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

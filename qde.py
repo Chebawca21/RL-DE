@@ -23,12 +23,6 @@ class QDE(DifferentialEvolution):
         self.population = self.initializePopulation()
         self.archive = []
         self.evaluate_population()
-    
-    def mutation(self, current, F):
-        idxs = np.random.randint(0, self.population_size, 3)
-        best_id = np.argmin([self.scores[idxs[0]], self.scores[idxs[1]], self.scores[idxs[2]]])
-        mutant = self.difference(self.population[idxs[best_id]], self.population[idxs[1]], self.population[idxs[2]], F)
-        return mutant
 
     def step(self):
         new_population = []
@@ -36,7 +30,10 @@ class QDE(DifferentialEvolution):
 
         for i in range(self.population_size):
             F, cr = self.qlearning.get_action(self.state)
-            mutant = self.mutation(i, F)
+            if self.mutation_type == 'current-to-best':
+                mutant = self.mutation(F, self.mutation_type, i)
+            else:
+                mutant = self.mutation(F, self.mutation_type)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
