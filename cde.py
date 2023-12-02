@@ -66,7 +66,7 @@ class CDE(DifferentialEvolution):
         for i in range(self.population_size):
             strat_id = self.get_strategy()
             F, cr = self.strategies[strat_id]
-            if self.mutation_type == 'current-to-best':
+            if self.mutation_type == 'current-to-best' or self.mutation_type == 'current-to-rand':
                 mutant = self.mutation(F, self.mutation_type, i)
             elif self.mutation_type == 'current-to-pbest':
                 mutant = self.mutation(F, self.mutation_type, self.p)

@@ -40,6 +40,10 @@ class DifferentialEvolution:
             curr_best = np.argmin(self.scores)
             mutant = self.difference(self.population[current], self.population[idxs[0]], self.population[idxs[1]], F)
             mutant = self.difference(mutant, self.population[curr_best], self.population[current], F)
+        if type == 'current-to-rand':
+            idxs = np.random.randint(0, self.population_size, 3)
+            mutant = self.difference(self.population[current], self.population[current], self.population[idxs[0]], F)
+            mutant = self.difference(mutant, self.population[idxs[1]], self.population[idxs[2]], F)
         if type == 'randrl':
             idxs = np.random.randint(0, self.population_size, 3)
             best_id = np.argmin([self.scores[idxs[0]], self.scores[idxs[1]], self.scores[idxs[2]]])
@@ -115,7 +119,7 @@ class DifferentialEvolution:
         new_scores = []
 
         for i in range(self.population_size):
-            if self.mutation_type == 'current-to-best':
+            if self.mutation_type == 'current-to-best' or self.mutation_type == 'current-to-rand':
                 mutant = self.mutation(self.F, self.mutation_type, i)
             elif self.mutation_type == 'current-to-pbest':
                 mutant = self.mutation(self.F, self.mutation_type, self.p)

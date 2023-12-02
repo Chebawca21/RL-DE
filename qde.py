@@ -35,7 +35,7 @@ class QDE(DifferentialEvolution):
 
         for i in range(self.population_size):
             F, cr = self.qlearning.get_action(self.state)
-            if self.mutation_type == 'current-to-best':
+            if self.mutation_type == 'current-to-best' or self.mutation_type == 'current-to-rand':
                 mutant = self.mutation(F, self.mutation_type, i)
             elif self.mutation_type == 'current-to-pbest':
                 mutant = self.mutation(F, self.mutation_type, self.p)
