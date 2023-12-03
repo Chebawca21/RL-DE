@@ -2,11 +2,12 @@ import numpy as np
 
 
 class QLearning:
-    def __init__(self, states, actions, learning_rate=0.8, discount_factor=0.8, epsilon=0.7):
+    def __init__(self, states, actions, learning_rate=0.8, discount_factor=0.8, selection_strategy='epsilon-greedy',  epsilon=0.9):
         self.states = states
         self.actions = actions
         self.lr = learning_rate
         self.gamma = discount_factor
+        self.selection_strategy = selection_strategy
         self.epsilon = epsilon
         self.n_states = len(states)
         self.n_actions = len(actions)
@@ -16,13 +17,26 @@ class QLearning:
         return np.zeros((self.n_states, self.n_actions))
 
     def get_action(self, state):
-        r = np.random.rand()
-        if r > self.epsilon:
-            action_index = np.random.randint(self.n_actions)
-        else:
-            state_index = self.states.index(state)
-            action_index = np.argmax(self.qtable[state_index])
-        return self.actions[action_index]
+        state_index = self.states.index(state)
+        if self.selection_strategy == 'epsilon-greedy':
+            r = np.random.rand()
+            if r > self.epsilon:
+                action_index = np.random.randint(self.n_actions)
+            else:
+                action_index = np.argmax(self.qtable[state_index])
+        if self.selection_strategy == 'boltzmann':
+            max_Q = np.max(self.qtable)
+            if max_Q == 0:
+                action_index = np.random.randint(self.n_actions)
+            else:
+                denominator = np.sum(np.exp(self.qtable[state_index] / max_Q))
+                probabilities = []
+                for i, _ in enumerate(self.actions):
+                    nominator = np.exp(self.qtable[state_index][i] / max_Q)
+                    probabilities.append(nominator / denominator)
+                action_index = np.random.choice(range(self.n_actions), p=probabilities)
+        action = self.actions[action_index]
+        return action
 
     def update_qtable(self, current_state, next_state, action, reward):
         current_state_id = self.states.index(current_state)
