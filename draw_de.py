@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from de import DifferentialEvolution
+import time
 
 class DrawDE():
     def __init__(self, func_num, population_size, F, cr, x_min, x_max, x_step, max_fes, fes_step):
@@ -15,7 +16,8 @@ class DrawDE():
 
         plt.ion()
         self.fig = plt.figure()
-        self.draw()
+        self.draw(0, self.de.best_score)
+        time.sleep(10)
 
     def initialize_function(self):
         self.x1, self.x2 = np.meshgrid(np.arange(self.x_min, self.x_max + self.x_step, self.x_step), np.arange(self.x_min, self.x_max + self.x_step, self.x_step))
@@ -32,10 +34,11 @@ class DrawDE():
     def draw_population(self):
         plt.scatter(self.de.population[:, 0], self.de.population[:, 1], marker='o', c='red')
     
-    def draw(self):
+    def draw(self, generation, best_score):
         plt.clf()
         self.draw_function()
         self.draw_population()
+        plt.title(f"Generacja: {generation}, Najlepszy wynik: {best_score:.3f}")
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
         plt.show()
@@ -44,14 +47,14 @@ class DrawDE():
         plt.ioff()
 
     def train(self):
-        for _ in range(int(self.max_fes / self.de.population_size)):
+        for i in range(int(self.max_fes / self.de.population_size)):
             if self.de.func_evals + self.de.population_size > self.max_fes:
                 break
             self.de.step()
             if self.de.func_evals % self.fes_step == 0:
-                self.draw()
+                self.draw(i, self.de.best_score)
         self.stop()
 
 
-draw_de = DrawDE(1, 20, 0.8, 0.8, -100, 100, 2, 3000, 20)
+draw_de = DrawDE(10, 50, 0.8, 0.8, -100, 100, 2, 10000, 50)
 draw_de.train()
