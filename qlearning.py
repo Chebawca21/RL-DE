@@ -2,7 +2,7 @@ import numpy as np
 
 
 class QLearning:
-    def __init__(self, states, actions, learning_rate=0.8, discount_factor=0.8, selection_strategy='epsilon-greedy',  epsilon=0.9):
+    def __init__(self, states, actions, learning_rate=0.8, discount_factor=0.5, selection_strategy='epsilon-greedy',  epsilon=0.9):
         self.states = states
         self.actions = actions
         self.lr = learning_rate

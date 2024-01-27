@@ -6,8 +6,9 @@ from cde import CDE
 from jade import JADE
 from shade import SHADE
 from qde import QDE
+from rl_hpsde import RL_HPSDE
 
-MAX_FES_10 = 200000
+MAX_FES_10 = 600000
 MAX_FES_20 = 1000000
 N_RUNS = 30
 
@@ -33,6 +34,10 @@ C = 0.1
 # SHADE
 MEMORY_SIZE = POPULATION_SIZE
 ARCHIVE_SIZE = POPULATION_SIZE
+
+# RL-HPSDE
+NUM_STEPS = 200
+STEP_SIZE = 10
 
 N_JOBS = -1
 
@@ -77,6 +82,14 @@ def train_qde(max_fes):
         qde.step()
     return qde.best_score
 
+def train_rl_hpsde(max_fes):
+    rl_hpsde = RL_HPSDE(D, FUNC_NUM, POPULATION_SIZE, MEMORY_SIZE, NUM_STEPS, STEP_SIZE)
+    for _ in range(int(max_fes / (POPULATION_SIZE + NUM_STEPS))):
+        if rl_hpsde.func_evals + POPULATION_SIZE + NUM_STEPS > max_fes:
+            break
+        rl_hpsde.step()
+    return rl_hpsde.best_score
+
 
 if __name__ == '__main__':
     if D == 10:
@@ -87,7 +100,7 @@ if __name__ == '__main__':
         max_fes = MAX_FES_10
 
     start = time.perf_counter()
-    scores = Parallel(n_jobs=N_JOBS)(delayed(train_qde)(max_fes) for _ in range(N_RUNS))
+    scores = Parallel(n_jobs=N_JOBS)(delayed(train_rl_hpsde)(max_fes) for _ in range(N_RUNS))
     end = time.perf_counter()
 
     scores = np.array(scores)
