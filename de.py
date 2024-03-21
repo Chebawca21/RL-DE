@@ -141,3 +141,13 @@ class DifferentialEvolution:
         self.population = new_population
         self.scores = np.array(new_scores)
         self.update_best_score()
+
+    def next_func_evals(self):
+        return self.func_evals + self.population_size
+
+    def train(self, max_fes):
+        while self.func_evals <= max_fes:
+            if self.next_func_evals() > max_fes:
+                break
+            self.step()
+        return self.best_score

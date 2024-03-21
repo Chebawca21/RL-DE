@@ -234,6 +234,9 @@ class RL_HPSDE(DifferentialEvolution):
         next_state = self.get_state()
         self.qlearning.update_qtable(self.state, next_state, action, reward)
 
-rl_hpsde = RL_HPSDE(2, 10, 50, 5)
-walk = rl_hpsde.progressive_random_walk()
-rl_hpsde.draw_walk(walk)
+    def next_func_evals(self):
+        return self.func_evals + self.population_size + self.num_steps
+
+# rl_hpsde = RL_HPSDE(2, 10, 50, 5)
+# walk = rl_hpsde.progressive_random_walk()
+# rl_hpsde.draw_walk(walk)

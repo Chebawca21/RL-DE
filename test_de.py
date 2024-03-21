@@ -8,7 +8,7 @@ from shade import SHADE
 from qde import QDE
 from rl_hpsde import RL_HPSDE
 
-MAX_FES_10 = 600000
+MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
 N_RUNS = 30
 
@@ -44,51 +44,33 @@ N_JOBS = -1
 
 def train_de(max_fes):
     de = DifferentialEvolution(D, FUNC_NUM, POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
-    for _ in range(int(max_fes / POPULATION_SIZE)):
-        if de.func_evals + POPULATION_SIZE > max_fes:
-            break
-        de.step()
-    return de.best_score
+    best_score = de.train(max_fes)
+    return best_score
 
 def train_cde(max_fes):
     cde = CDE(D, FUNC_NUM, POPULATION_SIZE, STRAT_CONSTANT, DELTA)
-    for _ in range(int(max_fes / POPULATION_SIZE)):
-        if cde.func_evals + POPULATION_SIZE > max_fes:
-            break
-        cde.step()
-    return cde.best_score
+    best_score = cde.train(max_fes)
+    return best_score
 
 def train_jade(max_fes):
     jade = JADE(D, FUNC_NUM, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
-    for _ in range(int(max_fes / POPULATION_SIZE)):
-        if jade.func_evals + POPULATION_SIZE > max_fes:
-            break
-        jade.step()
-    return jade.best_score
+    best_score = jade.train(max_fes)
+    return best_score
 
 def train_shade(max_fes):
     shade = SHADE(D, FUNC_NUM, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
-    for _ in range(int(max_fes / POPULATION_SIZE)):
-        if shade.func_evals + POPULATION_SIZE > max_fes:
-            break
-        shade.step()
-    return shade.best_score
+    best_score = shade.train(max_fes)
+    return best_score
 
 def train_qde(max_fes):
     qde = QDE(D, FUNC_NUM, POPULATION_SIZE, MUTATION_TYPE)
-    for _ in range(int(max_fes / POPULATION_SIZE)):
-        if qde.func_evals + POPULATION_SIZE > max_fes:
-            break
-        qde.step()
-    return qde.best_score
+    best_score = qde.train(max_fes)
+    return best_score
 
 def train_rl_hpsde(max_fes):
     rl_hpsde = RL_HPSDE(D, FUNC_NUM, POPULATION_SIZE, MEMORY_SIZE, NUM_STEPS, STEP_SIZE)
-    for _ in range(int(max_fes / (POPULATION_SIZE + NUM_STEPS))):
-        if rl_hpsde.func_evals + POPULATION_SIZE + NUM_STEPS > max_fes:
-            break
-        rl_hpsde.step()
-    return rl_hpsde.best_score
+    best_score = rl_hpsde.train(max_fes)
+    return best_score
 
 
 if __name__ == '__main__':

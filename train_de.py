@@ -78,18 +78,18 @@ def single_run(D, func_num, run_id, model='de'):
     k = 0
     fes = count_fes(de.D, k, max_fes)
     scores = []
-    for _ in range(int(max_fes / de.population_size)):
+    while de.func_evals <= max_fes:
         if de.best_score - OPTIMAL_SCORES[de.func_num - 1] <= MIN_ERROR:
             while fes <= max_fes:
                 scores.append(MIN_ERROR)
                 k += 1
                 fes = count_fes(de.D, k, max_fes)
             break
-        if de.func_evals + de.population_size > fes:
+        if de.next_func_evals() > fes:
             scores.append(de.best_score - OPTIMAL_SCORES[de.func_num - 1])
             k += 1
             fes = count_fes(de.D, k, max_fes)
-        if de.func_evals + de.population_size > max_fes:
+        if de.next_func_evals > max_fes:
             break
         de.step()
 
