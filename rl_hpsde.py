@@ -6,11 +6,14 @@ from scipy.stats import levy
 import matplotlib.pyplot as plt
 
 class RL_HPSDE(DifferentialEvolution):
-    def __init__(self, dimension, func_num, population_size, memory_size, num_steps=200, step_size=10, p=0.1, archive_size=None):
+    def __init__(self, dimension, func_num, max_population_size, min_population_size, max_fes, memory_size, num_steps=200, step_size=10, p=0.1, archive_size=None):
         self.D = dimension
         self.func_num = func_num
         self.cec = cec2022_func(self.func_num)
-        self.population_size = population_size
+        self.population_size = max_population_size
+        self.max_population_size = max_population_size
+        self.min_population_size = min_population_size
+        self.max_fes = max_fes
         self.memory_size = memory_size
         self.memory_F = np.full((self.memory_size, 1), 0.5)
         self.memory_cr = np.full((self.memory_size, 1), 0.5)
@@ -20,9 +23,9 @@ class RL_HPSDE(DifferentialEvolution):
         actions = [*range(1, 5)]
         states = [*range(1, 5)]
         self.qlearning = QLearning(states, actions, selection_strategy='boltzmann')
-        self.p = int(p * population_size)
+        self.p = int(p * max_population_size)
         if archive_size is None:
-            self.archive_size = population_size
+            self.archive_size = max_population_size
         else:
             self.archive_size = archive_size
         self.func_evals = 0
@@ -72,8 +75,6 @@ class RL_HPSDE(DifferentialEvolution):
         plt.show()
 
     def dfdc(self, walk, f):
-        self.func_evals += self.num_steps
-
         d = np.linalg.norm(walk - self.best_individual, ord=2, axis=-1)
 
         f_average = np.average(f)
@@ -121,7 +122,7 @@ class RL_HPSDE(DifferentialEvolution):
         return np.max(information_entropies)
 
     def get_state(self):
-        self.func_evals = self.func_evals + self.num_steps
+        self.func_evals += self.num_steps
         walk = self.progressive_random_walk()
         f = self.cec.values(walk)
         dfdc = self.dfdc(walk, f)
@@ -180,6 +181,13 @@ class RL_HPSDE(DifferentialEvolution):
             weight = diff / (n * diff)
             mean += weight * value
         return mean
+    
+    def adjust_population_size(self, new_population, new_scores):
+        new_population_size = (np.round(self.min_population_size - self.max_population_size) / self.max_fes * self.func_evals) + self.max_population_size
+        new_population_size = max(int(new_population_size), 1)
+        optimal = sorted(zip(new_scores, new_population), key=lambda x: x[0])[:new_population_size]
+        new_scores, new_population = zip(*optimal)
+        return new_population_size, new_population, new_scores
 
     def step(self):
         new_population = []
@@ -227,15 +235,21 @@ class RL_HPSDE(DifferentialEvolution):
             self.k += 1
             if self.k >= self.memory_size:
                 self.k = 0
-        self.population = new_population
-        self.scores = np.array(new_scores)
-        self.update_best_score()
         reward = len(S_F) / self.population_size
         next_state = self.get_state()
         self.qlearning.update_qtable(self.state, next_state, action, reward)
+        self.population_size, self.population, self.scores = self.adjust_population_size(new_population, new_scores)
+        self.update_best_score()
 
     def next_func_evals(self):
         return self.func_evals + self.population_size + self.num_steps
+
+
+# rl_hpsde = RL_HPSDE(2, 10, 5, 3, 205, 10)
+# new_population = ["a", "b", "c", "d", "e"]
+# new_scores = [1, 3, 2, 5, 4]
+# rl_hpsde.adjust_population_size(new_population, new_scores)
+    
 
 # rl_hpsde = RL_HPSDE(2, 10, 50, 5)
 # walk = rl_hpsde.progressive_random_walk()

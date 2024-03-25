@@ -36,6 +36,8 @@ MEMORY_SIZE = POPULATION_SIZE
 ARCHIVE_SIZE = POPULATION_SIZE
 
 # RL-HPSDE
+MAX_POPULATION_SIZE = 5 * D
+MIN_POPULATION_SIZE = 1 * D
 NUM_STEPS = 200
 STEP_SIZE = 10
 
@@ -68,7 +70,7 @@ def train_qde(max_fes):
     return best_score
 
 def train_rl_hpsde(max_fes):
-    rl_hpsde = RL_HPSDE(D, FUNC_NUM, POPULATION_SIZE, MEMORY_SIZE, NUM_STEPS, STEP_SIZE)
+    rl_hpsde = RL_HPSDE(D, FUNC_NUM, MAX_POPULATION_SIZE, MIN_POPULATION_SIZE, max_fes, MEMORY_SIZE, NUM_STEPS, STEP_SIZE)
     best_score = rl_hpsde.train(max_fes)
     return best_score
 
