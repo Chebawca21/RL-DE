@@ -1,6 +1,7 @@
 import time
 import numpy as np
 import pandas as pd
+import opfunu
 from joblib import Parallel, delayed
 from de import DifferentialEvolution
 from cde import CDE
@@ -13,8 +14,6 @@ MAX_FES_20 = 1000000
 MAX_FES_OTHER = 10000
 MIN_ERROR = 10 ** (-8)
 N_RUNS = 30
-
-OPTIMAL_SCORES = [300, 400, 600, 800, 900, 1800, 2000, 2200, 2300, 2400, 2600, 2700]
 
 POPULATION_SIZE = 50
 
@@ -49,24 +48,24 @@ def get_seed(problem_size, func_num, runs, run_id):
 def count_fes(D, k, max_fes):
     return D ** (k/5 - 3) * max_fes
 
-def get_de(D, func_num, model='de'):
+def get_de(D, func, model='de'):
     if model == 'de':
-        de = DifferentialEvolution(D, func_num, POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
+        de = DifferentialEvolution(D, func, POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
     elif model == 'cde':
-        de = CDE(D, func_num, POPULATION_SIZE, STRAT_CONSTANT, DELTA)
+        de = CDE(D, func, POPULATION_SIZE, STRAT_CONSTANT, DELTA)
     elif model == 'jade':
-        de = JADE(D, func_num, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
+        de = JADE(D, func, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
     elif model == 'shade':
-        de = SHADE(D, func_num, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
+        de = SHADE(D, func, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
     elif model == 'qde':
-        de = QDE(D, func_num, POPULATION_SIZE, MUTATION_TYPE)
+        de = QDE(D, func, POPULATION_SIZE, MUTATION_TYPE)
     return de
 
-def single_run(D, func_num, run_id, model='de'):
+def single_run(D, func, func_num, run_id, model='de'):
     seed = get_seed(D, func_num, N_RUNS, run_id)
     np.random.seed(seed)
 
-    de = get_de(D, func_num, model)
+    de = get_de(D, func(ndim=D), model)
 
     if de.D == 10:
         max_fes = MAX_FES_10
@@ -79,37 +78,37 @@ def single_run(D, func_num, run_id, model='de'):
     fes = count_fes(de.D, k, max_fes)
     scores = []
     while de.func_evals <= max_fes:
-        if de.best_score - OPTIMAL_SCORES[de.func_num - 1] <= MIN_ERROR:
+        if de.best_score - de.func.f_global <= MIN_ERROR:
             while fes <= max_fes:
                 scores.append(MIN_ERROR)
                 k += 1
                 fes = count_fes(de.D, k, max_fes)
             break
         if de.next_func_evals() > fes:
-            scores.append(de.best_score - OPTIMAL_SCORES[de.func_num - 1])
+            scores.append(de.best_score - de.func.f_global)
             k += 1
             fes = count_fes(de.D, k, max_fes)
-        if de.next_func_evals > max_fes:
+        if de.next_func_evals() > max_fes:
             break
         de.step()
 
     scores.append(de.func_evals)
     return scores
 
-def train(Ds, func_nums, model='de'):
+def train(Ds, funcs, model='de'):
     start_total = time.perf_counter()
     for D in Ds:
         results_file_name = f"out/{model}_{D}.txt"
         results_file_name_tex = f"out/{model}_{D}.tex"
         results = []
         columns = ["Best", "Worst", "Median", "Mean", "Std"]
-        index = func_nums
-        for func_num in func_nums:
+        func_nums = [int(x.__name__[1:-4]) for x in funcs]
+        for id, func in enumerate(funcs):
             start = time.perf_counter()
-            data = Parallel(n_jobs=N_JOBS)(delayed(single_run)(D, func_num, run_id, model) for run_id in range(N_RUNS))
+            data = Parallel(n_jobs=N_JOBS)(delayed(single_run)(D, func, func_nums[id], run_id, model) for run_id in range(N_RUNS))
             end = time.perf_counter()
-            print(f"Finished D={D} and func_num={func_num} for model {model} in {end - start} seconds.")
-            file_name = f"out/{model}_{func_num}_{D}.txt"
+            print(f"Finished D={D} and func_num={func_nums[id]} for model {model} in {end - start} seconds.")
+            file_name = f"out/{model}_{func.__name__}_{D}.txt"
             df = []
             for i in range(17):
                 row = []
@@ -125,7 +124,7 @@ def train(Ds, func_nums, model='de'):
             mean = np.mean(scores)
             std = np.std(scores)
             results.append([best, worst, median, mean, std])
-        results = pd.DataFrame(results, columns=columns, index=index)
+        results = pd.DataFrame(results, columns=columns, index=func_nums)
         results.to_string(results_file_name, float_format="{:.8f}".format)
         results.to_latex(results_file_name_tex, float_format="{:.8f}".format)
     
@@ -148,7 +147,7 @@ def train(Ds, func_nums, model='de'):
     columns = ['T0', "T1", "T2", "(T2 - T1) / T0"]
     index = Ds
     for D in Ds:
-        de = DifferentialEvolution(D, 1, POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
+        de = DifferentialEvolution(D, funcs[0](ndim=D), POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
         start_t1 = time.perf_counter()
         for _ in range(int(200000 / POPULATION_SIZE)):
             de.evaluate_population()
@@ -157,7 +156,7 @@ def train(Ds, func_nums, model='de'):
 
         t2s = []
         for _ in range(5):
-            de = get_de(D, 1, model)
+            de = get_de(D, funcs[0](ndim=D), model)
             start_t2 = time.perf_counter()
             for _ in range(int(200000 / POPULATION_SIZE)):
                 de.step()
@@ -174,5 +173,7 @@ def train(Ds, func_nums, model='de'):
             
 if __name__ == '__main__':
     Ds = [10, 20]
-    func_nums = list(range(1, 13))
-    train(Ds, func_nums, 'qde')
+    cec = "2022"
+    funcs = opfunu.get_functions_based_classname(cec)
+    funcs.sort(key=lambda x: int(x.__name__[1:-4]))
+    train(Ds, funcs, 'qde')

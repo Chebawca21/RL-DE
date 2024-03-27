@@ -1,13 +1,11 @@
 import numpy as np
 from de import DifferentialEvolution
-from SO_BO.CEC2022 import cec2022_func
 
 
 class JADE(DifferentialEvolution):
-    def __init__(self, dimension, func_num, population_size, archive_size, p, c, mutation_type='current-to-pbest'):
+    def __init__(self, dimension, func, population_size, archive_size, p, c, mutation_type='current-to-pbest'):
         self.D = dimension
-        self.func_num = func_num
-        self.cec = cec2022_func(self.func_num)
+        self.func = func
         self.population_size = population_size
         self.archive_size = archive_size
         self.mean_F = 0.5

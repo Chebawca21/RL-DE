@@ -2,13 +2,11 @@ import numpy as np
 from itertools import product
 from de import DifferentialEvolution
 from qlearning import QLearning
-from SO_BO.CEC2022 import cec2022_func
 
 class QDE(DifferentialEvolution):
-    def __init__(self, dimension, func_num, population_size, mutation_type='best', p=0.1, archive_size=None):
+    def __init__(self, dimension, func, population_size, mutation_type='best', p=0.1, archive_size=None):
         self.D = dimension
-        self.func_num = func_num
-        self.cec = cec2022_func(self.func_num)
+        self.func = func
         self.population_size = population_size
         self.F_pool = [0.5, 0.8, 1.0]
         self.cr_pool = [0.0, 0.5, 1.0]

@@ -1,15 +1,13 @@
 import numpy as np
 from de import DifferentialEvolution
 from qlearning import QLearning
-from SO_BO.CEC2022 import cec2022_func
 from scipy.stats import levy
 import matplotlib.pyplot as plt
 
 class RL_HPSDE(DifferentialEvolution):
-    def __init__(self, dimension, func_num, max_population_size, min_population_size, max_fes, memory_size, num_steps=200, step_size=10, p=0.1, archive_size=None):
+    def __init__(self, dimension, func, max_population_size, min_population_size, max_fes, memory_size, num_steps=200, step_size=10, p=0.1, archive_size=None):
         self.D = dimension
-        self.func_num = func_num
-        self.cec = cec2022_func(self.func_num)
+        self.func = func
         self.population_size = max_population_size
         self.max_population_size = max_population_size
         self.min_population_size = min_population_size

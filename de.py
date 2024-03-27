@@ -1,12 +1,10 @@
 import numpy as np
-from SO_BO.CEC2022 import cec2022_func
 
 
 class DifferentialEvolution:
-    def __init__(self, dimension, func_num, population_size, F, cr, mutation_type='rand', crossover_type='bin', p=0.1, archive_size=None):
+    def __init__(self, dimension, func, population_size, F, cr, mutation_type='rand', crossover_type='bin', p=0.1, archive_size=None):
         self.D = dimension
-        self.func_num = func_num
-        self.cec = cec2022_func(self.func_num)
+        self.func = func
         self.population_size = population_size
         self.F = F
         self.cr = cr
@@ -101,11 +99,13 @@ class DifferentialEvolution:
 
     def evaluate(self, value):
         self.func_evals = self.func_evals + 1
-        return self.cec.value(value)
+        return self.func.evaluate(value)
 
     def evaluate_population(self):
         self.func_evals = self.func_evals + self.population_size
-        self.scores = self.cec.values(self.population)
+        self.scores = np.zeros(self.population_size)
+        for i, individual in enumerate(self.population):
+            self.scores[i] = self.func.evaluate(individual)
         self.update_best_score()
 
     def update_best_score(self):
