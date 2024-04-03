@@ -122,7 +122,9 @@ class RL_HPSDE(DifferentialEvolution):
     def get_state(self):
         self.func_evals += self.num_steps
         walk = self.progressive_random_walk()
-        f = self.cec.values(walk)
+        f = np.zeros(self.num_steps)
+        for i, point in enumerate(walk):
+            f[i] = self.evaluate(point)
         dfdc = self.dfdc(walk, f)
         drie = self.drie(f)
         if drie < 0.5 and dfdc <= 0.15:
