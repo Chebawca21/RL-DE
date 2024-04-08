@@ -224,9 +224,7 @@ class RL_HPSDE(DifferentialEvolution):
                 S_F.append(F)
                 S_cr.append(cr)
 
-        if len(self.archive) > self.archive_size:
-            np.random.shuffle(self.archive)
-            self.archive = self.archive[:self.archive_size]
+        self.resize_archive()
         if S_F and S_cr:
             self.memory_F[self.k] = self.weighted_lehmer_mean(S_F, diffs)
             self.memory_cr[self.k] = self.weighted_mean(S_cr, diffs)

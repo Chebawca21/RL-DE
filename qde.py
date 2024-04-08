@@ -33,12 +33,7 @@ class QDE(DifferentialEvolution):
 
         for i in range(self.population_size):
             F, cr = self.qlearning.get_action(self.state)
-            if self.mutation_type == 'current-to-best' or self.mutation_type == 'current-to-rand':
-                mutant = self.mutation(F, self.mutation_type, i)
-            elif self.mutation_type == 'current-to-pbest':
-                mutant = self.mutation(F, self.mutation_type, self.p)
-            else:
-                mutant = self.mutation(F, self.mutation_type)
+            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
@@ -51,9 +46,7 @@ class QDE(DifferentialEvolution):
                 new_population.append(self.population[i])
                 new_scores.append(self.scores[i])
 
-        if len(self.archive) > self.archive_size:
-            np.random.shuffle(self.archive)
-            self.archive = self.archive[:self.archive_size]
+        self.resize_archive()
         self.population = new_population
         self.scores = np.array(new_scores)
         self.update_best_score()

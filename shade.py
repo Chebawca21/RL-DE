@@ -67,13 +67,7 @@ class SHADE(JADE):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            if self.mutation_type == 'current-to-best' or self.mutation_type == 'current-to-rand':
-                mutant = self.mutation(F, self.mutation_type, i)
-            elif self.mutation_type == 'current-to-pbest':
-                p = np.random.randint(2, int(0.2 * self.population_size))
-                mutant = self.mutation(F, self.mutation_type, p)
-            else:
-                mutant = self.mutation(F, self.mutation_type)
+            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
@@ -88,9 +82,7 @@ class SHADE(JADE):
                 S_F.append(F)
                 S_cr.append(cr)
         
-        if len(self.archive) > self.archive_size:
-            np.random.shuffle(self.archive)
-            self.archive = self.archive[:self.archive_size]
+        self.resize_archive()
         if S_F and S_cr:
             self.memory_F[self.k] = self.weighted_lehmer_mean(S_F, diffs)
             self.memory_cr[self.k] = self.weighted_mean(S_cr, diffs)

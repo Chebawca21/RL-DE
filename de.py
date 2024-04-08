@@ -108,6 +108,11 @@ class DifferentialEvolution:
             self.scores[i] = self.func.evaluate(individual)
         self.update_best_score()
 
+    def resize_archive(self):
+        if len(self.archive) > self.archive_size:
+            np.random.shuffle(self.archive)
+            self.archive = self.archive[:self.archive_size]
+
     def update_best_score(self):
         for i in range(self.population_size):
             if self.scores[i] < self.best_score:
@@ -119,12 +124,7 @@ class DifferentialEvolution:
         new_scores = []
 
         for i in range(self.population_size):
-            if self.mutation_type == 'current-to-best' or self.mutation_type == 'current-to-rand':
-                mutant = self.mutation(self.F, self.mutation_type, i)
-            elif self.mutation_type == 'current-to-pbest':
-                mutant = self.mutation(self.F, self.mutation_type, self.p)
-            else:
-                mutant = self.mutation(self.F, self.mutation_type)
+            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
             candidate = self.crossover(mutant, self.population[i], self.cr, self.crossover_type)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
@@ -135,9 +135,7 @@ class DifferentialEvolution:
                 new_population[i] = self.population[i]
                 new_scores.append(self.scores[i])
 
-        if len(self.archive) > self.archive_size:
-            np.random.shuffle(self.archive)
-            self.archive = self.archive[:self.archive_size]
+        self.resize_archive()
         self.population = new_population
         self.scores = np.array(new_scores)
         self.update_best_score()

@@ -64,12 +64,7 @@ class CDE(DifferentialEvolution):
         for i in range(self.population_size):
             strat_id = self.get_strategy()
             F, cr = self.strategies[strat_id]
-            if self.mutation_type == 'current-to-best' or self.mutation_type == 'current-to-rand':
-                mutant = self.mutation(F, self.mutation_type, i)
-            elif self.mutation_type == 'current-to-pbest':
-                mutant = self.mutation(F, self.mutation_type, self.p)
-            else:
-                mutant = self.mutation(F, self.mutation_type)
+            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
@@ -81,9 +76,7 @@ class CDE(DifferentialEvolution):
                 new_population.append(self.population[i])
                 new_scores.append(self.scores[i])
 
-        if len(self.archive) > self.archive_size:
-            np.random.shuffle(self.archive)
-            self.archive = self.archive[:self.archive_size]
+        self.resize_archive()
         self.update_strategies
         self.population = new_population
         self.scores = np.array(new_scores)
