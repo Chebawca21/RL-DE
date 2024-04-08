@@ -58,8 +58,8 @@ class SHADE(JADE):
         return mean
 
     def step(self):
-        new_population = []
-        new_scores = []
+        new_population = np.zeros_like(self.population)
+        new_scores = np.zeros(self.population_size)
         S_F, S_cr = [], []
         diffs = []
 
@@ -72,11 +72,11 @@ class SHADE(JADE):
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
-                new_population.append(candidate)
-                new_scores.append(candidate_score)
+                new_population[i] = candidate
+                new_scores[i] = candidate_score
             else:
-                new_population.append(self.population[i])
-                new_scores.append(self.scores[i])
+                new_population[i] = self.population[i]
+                new_scores[i] = self.scores[i]
             if candidate_score < self.scores[i]:
                 self.archive.append(self.population[i])
                 diffs.append(self.scores[i] - candidate_score)
@@ -91,5 +91,5 @@ class SHADE(JADE):
             if self.k >= self.memory_size:
                 self.k = 0
         self.population = new_population
-        self.scores = np.array(new_scores)
+        self.scores = new_scores
         self.update_best_score()

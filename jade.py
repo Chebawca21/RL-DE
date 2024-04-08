@@ -48,8 +48,8 @@ class JADE(DifferentialEvolution):
         return sum(list) / len(list)
 
     def step(self):
-        new_population = []
-        new_scores = []
+        new_population = np.zeros_like(self.population)
+        new_scores = np.zeros(self.population_size)
         S_F, S_cr = [], []
 
         for i in range(self.population_size):
@@ -60,18 +60,18 @@ class JADE(DifferentialEvolution):
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
-                new_population.append(candidate)
-                new_scores.append(candidate_score)
+                new_population[i] = candidate
+                new_scores[i] = candidate_score
                 self.archive.append(self.population[i])
                 S_F.append(F)
                 S_cr.append(cr)
             else:
-                new_population.append(self.population[i])
-                new_scores.append(self.scores[i])
+                new_population[i] = self.population[i]
+                new_scores[i] = self.scores[i]
         
         self.resize_archive()
         self.mean_F = ((1 - self.c) * self.mean_F) + (self.c * self.lehmer_mean(S_F))
         self.mean_cr = ((1 - self.c) * self.mean_cr) + (self.c * self.mean(S_cr))
         self.population = new_population
-        self.scores = np.array(new_scores)
+        self.scores = new_scores
         self.update_best_score()

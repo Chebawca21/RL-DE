@@ -121,7 +121,7 @@ class DifferentialEvolution:
 
     def step(self):
         new_population = np.zeros_like(self.population)
-        new_scores = []
+        new_scores = np.zeros(self.population_size)
 
         for i in range(self.population_size):
             mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
@@ -129,15 +129,15 @@ class DifferentialEvolution:
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
                 new_population[i] = candidate
-                new_scores.append(candidate_score)
+                new_scores[i] = candidate_score
                 self.archive.append(self.population[i])
             else:
                 new_population[i] = self.population[i]
-                new_scores.append(self.scores[i])
+                new_scores[i] = self.scores[i]
 
         self.resize_archive()
         self.population = new_population
-        self.scores = np.array(new_scores)
+        self.scores = new_scores
         self.update_best_score()
 
     def next_func_evals(self):

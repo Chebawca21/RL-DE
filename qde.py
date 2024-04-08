@@ -28,8 +28,8 @@ class QDE(DifferentialEvolution):
         self.evaluate_population()
 
     def step(self):
-        new_population = []
-        new_scores = []
+        new_population = np.zeros_like(self.population)
+        new_scores = np.zeros(self.population_size)
 
         for i in range(self.population_size):
             F, cr = self.qlearning.get_action(self.state)
@@ -38,15 +38,15 @@ class QDE(DifferentialEvolution):
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
                 self.qlearning.update_qtable(self.state, self.state, (F, cr), 1)
-                new_population.append(candidate)
-                new_scores.append(candidate_score)
+                new_population[i] = candidate
+                new_scores[i] = candidate_score
                 self.archive.append(self.population[i])
             else:
                 self.qlearning.update_qtable(self.state, self.state, (F, cr), -0.5)
-                new_population.append(self.population[i])
-                new_scores.append(self.scores[i])
+                new_population[i] = self.population[i]
+                new_scores[i] = self.scores[i]
 
         self.resize_archive()
         self.population = new_population
-        self.scores = np.array(new_scores)
+        self.scores = new_scores
         self.update_best_score()
