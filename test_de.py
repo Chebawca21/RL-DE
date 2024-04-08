@@ -6,6 +6,7 @@ from de import DifferentialEvolution
 from cde import CDE
 from jade import JADE
 from shade import SHADE
+from l_shade import L_SHADE
 from qde import QDE
 from rl_hpsde import RL_HPSDE
 
@@ -36,9 +37,11 @@ C = 0.1
 MEMORY_SIZE = POPULATION_SIZE
 ARCHIVE_SIZE = POPULATION_SIZE
 
+# L-SHADE
+MAX_POPULATION_SIZE = 18 * D
+MIN_POPULATION_SIZE = 4 * D
+
 # RL-HPSDE
-MAX_POPULATION_SIZE = 5 * D
-MIN_POPULATION_SIZE = 1 * D
 NUM_STEPS = 200
 STEP_SIZE = 10
 
@@ -68,6 +71,11 @@ def train_shade(max_fes):
     best_score = shade.train(max_fes)
     return best_score
 
+def train_l_shade(max_fes):
+    shade = L_SHADE(D, func, MAX_POPULATION_SIZE, MIN_POPULATION_SIZE, max_fes, MEMORY_SIZE, ARCHIVE_SIZE)
+    best_score = shade.train(max_fes)
+    return best_score
+
 def train_qde(max_fes):
     qde = QDE(D, func, POPULATION_SIZE, MUTATION_TYPE)
     best_score = qde.train(max_fes)
@@ -88,7 +96,7 @@ if __name__ == '__main__':
         max_fes = MAX_FES_10
 
     start = time.perf_counter()
-    scores = Parallel(n_jobs=N_JOBS)(delayed(train_shade)(max_fes) for _ in range(N_RUNS))
+    scores = Parallel(n_jobs=N_JOBS)(delayed(train_l_shade)(max_fes) for _ in range(N_RUNS))
     end = time.perf_counter()
 
     scores = np.array(scores)
