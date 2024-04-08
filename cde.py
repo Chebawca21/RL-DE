@@ -64,7 +64,7 @@ class CDE(DifferentialEvolution):
         for i in range(self.population_size):
             strat_id = self.get_strategy()
             F, cr = self.strategies[strat_id]
-            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
+            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

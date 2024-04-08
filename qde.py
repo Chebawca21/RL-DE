@@ -33,7 +33,7 @@ class QDE(DifferentialEvolution):
 
         for i in range(self.population_size):
             F, cr = self.qlearning.get_action(self.state)
-            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
+            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

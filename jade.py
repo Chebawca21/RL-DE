@@ -56,7 +56,7 @@ class JADE(DifferentialEvolution):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
+            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

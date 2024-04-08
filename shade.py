@@ -67,7 +67,8 @@ class SHADE(JADE):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
+            p = np.random.randint(2, int(0.2 * self.population_size))
+            mutant = self.mutation(F, self.mutation_type, current=i, p=p)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
