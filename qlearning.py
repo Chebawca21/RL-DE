@@ -46,13 +46,21 @@ class QLearning:
         new_value = new_value + self.lr * (reward + self.gamma * (np.max(self.qtable[next_state_id])))
         self.qtable[current_state_id][action_id] = new_value
 
+    def load_qtable(self, file_name):
+        self.qtable = np.loadtxt(file_name)
+
+    def save_qtable(self, file_name):
+        np.savetxt(file_name, self.qtable)
+
 if __name__ == '__main__':
     states = ['a', 'b', 'c', 'd', 'e']
     actions = ['up', 'down', 'right', 'left']
     ql = QLearning(states, actions)
+    ql.load_qtable("qtable.txt")
     print(ql.qtable)
 
     action = ql.get_action('a')
     print(action)
     ql.update_qtable('a', 'b', action, 1)
     print(ql.qtable)
+    ql.save_qtable("qtable.txt")
