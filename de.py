@@ -104,9 +104,10 @@ class DifferentialEvolution:
 
     def binary_crossover(self, a, b, cr):
         c = np.zeros(self.D)
+        l = np.random.randint(0, self.D)
         for i in range(self.D):
             r = np.random.rand()
-            if r < cr:
+            if r <= cr or i == l:
                 c[i] = b[i]
             else:
                 c[i] = a[i]
