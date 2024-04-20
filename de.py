@@ -1,5 +1,4 @@
 import numpy as np
-import opfunu
 
 class DifferentialEvolution:
     def __init__(self, dimension, func, population_size, F, cr, mutation_type='rand', crossover_type='bin', p=0.1, archive_size=None):

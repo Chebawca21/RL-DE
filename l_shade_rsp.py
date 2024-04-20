@@ -1,6 +1,5 @@
 import numpy as np
 from l_shade import L_SHADE
-import opfunu
 
 
 class L_SHADE_RSP(L_SHADE):
