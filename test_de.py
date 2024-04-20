@@ -77,13 +77,13 @@ def train_shade(max_fes):
     return best_score
 
 def train_l_shade(max_fes):
-    shade = L_SHADE(D, func, MAX_POPULATION_SIZE, MIN_POPULATION_SIZE, max_fes, MEMORY_SIZE, ARCHIVE_SIZE)
-    best_score = shade.train(max_fes)
+    l_shade = L_SHADE(D, func, MAX_POPULATION_SIZE, MIN_POPULATION_SIZE, max_fes, MEMORY_SIZE, ARCHIVE_SIZE)
+    best_score = l_shade.train(max_fes)
     return best_score
 
 def train_l_shade_rsp(max_fes):
-    shade = L_SHADE_RSP(D, func, MAX_POPULATION_SIZE, MIN_POPULATION_SIZE, max_fes, MEMORY_SIZE, ARCHIVE_SIZE)
-    best_score = shade.train(max_fes)
+    l_shade_rsp = L_SHADE_RSP(D, func, MAX_POPULATION_SIZE, MIN_POPULATION_SIZE, max_fes, MEMORY_SIZE, ARCHIVE_SIZE)
+    best_score = l_shade_rsp.train(max_fes)
     return best_score
 
 def train_qde(max_fes):
