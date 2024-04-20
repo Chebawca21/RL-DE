@@ -8,6 +8,7 @@ class CDE(DifferentialEvolution):
         self.D = dimension
         self.func = func
         self.population_size = population_size
+        self.rank_greediness_factor = 3
         self.n_strategies = 9
         self.F_pool = [0.5, 0.8, 1.0]
         self.cr_pool = [0.0, 0.5, 1.0]
@@ -60,11 +61,12 @@ class CDE(DifferentialEvolution):
     def step(self):
         new_population = np.zeros_like(self.population)
         new_scores = np.zeros(self.population_size)
+        prs = self.get_rank_probabilities()
 
         for i in range(self.population_size):
             strat_id = self.get_strategy()
             F, cr = self.strategies[strat_id]
-            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p)
+            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

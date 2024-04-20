@@ -12,6 +12,7 @@ class RL_HPSDE(DifferentialEvolution):
         self.max_population_size = max_population_size
         self.min_population_size = min_population_size
         self.max_fes = max_fes
+        self.rank_greediness_factor = 3
         self.memory_size = memory_size
         self.memory_F = np.full((self.memory_size, 1), 0.5)
         self.memory_cr = np.full((self.memory_size, 1), 0.5)
@@ -194,6 +195,7 @@ class RL_HPSDE(DifferentialEvolution):
         new_scores = np.zeros(self.population_size)
         S_F, S_cr = [], []
         diffs = []
+        prs = self.get_rank_probabilities()
 
         action = self.qlearning.get_action(self.state)
         for i in range(self.population_size):

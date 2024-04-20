@@ -8,6 +8,7 @@ class QDE(DifferentialEvolution):
         self.D = dimension
         self.func = func
         self.population_size = population_size
+        self.rank_greediness_factor = 3
         self.F_pool = [0.5, 0.8, 1.0]
         self.cr_pool = [0.0, 0.5, 1.0]
         actions = list(product(self.F_pool, self.cr_pool))
@@ -30,10 +31,11 @@ class QDE(DifferentialEvolution):
     def step(self):
         new_population = np.zeros_like(self.population)
         new_scores = np.zeros(self.population_size)
+        prs = self.get_rank_probabilities()
 
         for i in range(self.population_size):
             F, cr = self.qlearning.get_action(self.state)
-            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p)
+            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

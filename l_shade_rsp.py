@@ -1,16 +1,20 @@
 import numpy as np
-from jade import JADE
+from l_shade import L_SHADE
+import opfunu
 
 
-class SHADE(JADE):
-    def __init__(self, dimension, func, population_size, memory_size, archive_size, mutation_type='current-to-pbest'):
+class L_SHADE_RSP(L_SHADE):
+    def __init__(self, dimension, func, max_population_size, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest-r'):
         self.D = dimension
         self.func = func
-        self.population_size = population_size
+        self.population_size = max_population_size
+        self.max_population_size = max_population_size
+        self.min_population_size = min_population_size
+        self.max_fes = max_fes
         self.rank_greediness_factor = 3
         self.memory_size = memory_size
-        self.memory_F = np.full((self.memory_size, 1), 0.5)
-        self.memory_cr = np.full((self.memory_size, 1), 0.5)
+        self.memory_F = np.full((self.memory_size, 1), 0.3)
+        self.memory_cr = np.full((self.memory_size, 1), 0.8)
         self.k = 0
         self.archive_size = archive_size
         self.mutation_type = mutation_type
@@ -23,40 +27,37 @@ class SHADE(JADE):
 
     def generate_F(self):
         F = -1
-        r = np.random.randint(0, self.memory_size)
+        r = np.random.randint(0, self.memory_size + 1)
+        if r == self.memory_size:
+            mean = 0.9
+        else:
+            mean = self.memory_F[r]
+
         while F <= 0:
             F = np.random.standard_cauchy()
-            F = self.memory_F[r] + (F * 0.1)
+            F = mean + (F * 0.1)
         if F > 1:
             F = 1
         return F
 
     def generate_cr(self):
         cr = -1
-        r = np.random.randint(0, self.memory_size)
+        r = np.random.randint(0, self.memory_size + 1)
+        if r == self.memory_size:
+            mean = 0.9
+        else:
+            mean = self.memory_cr[r]
+
         while cr <= 0:
-            cr = np.random.normal(self.memory_cr[r], 0.1)
+            cr = np.random.normal(mean, 0.1)
         if cr > 1:
             cr = 1
+
+        if self.func_evals < 0.25 * self.max_fes:
+            cr = max(cr, 0.7)
+        elif self.func_evals < 0.5 * self.max_fes:
+            cr = max(cr, 0.6)
         return cr
-
-    def weighted_lehmer_mean(self, list, diffs):
-        n = len(list)
-        mean = 0.0
-        squared_mean = 0.0
-        for value, diff in zip(list, diffs):
-            weight = diff / (n * diff)
-            mean += weight * value
-            squared_mean += weight * (value ** 2)
-        return squared_mean / mean
-
-    def weighted_mean(self, list, diffs):
-        n = len(list)
-        mean = 0.0
-        for value, diff in zip(list, diffs):
-            weight = diff / (n * diff)
-            mean += weight * value
-        return mean
 
     def step(self):
         new_population = np.zeros_like(self.population)
@@ -92,6 +93,7 @@ class SHADE(JADE):
             self.k += 1
             if self.k >= self.memory_size:
                 self.k = 0
-        self.population = new_population
-        self.scores = new_scores
+        self.population_size, self.population, self.scores = self.adjust_population_size(new_population, new_scores)
+        self.archive_size = self.population_size
+        self.resize_archive()
         self.update_best_score()

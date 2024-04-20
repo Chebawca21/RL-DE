@@ -10,6 +10,7 @@ class L_SHADE(SHADE):
         self.max_population_size = max_population_size
         self.min_population_size = min_population_size
         self.max_fes = max_fes
+        self.rank_greediness_factor = 3
         self.memory_size = memory_size
         self.memory_F = np.full((self.memory_size, 1), 0.5)
         self.memory_cr = np.full((self.memory_size, 1), 0.5)
@@ -37,13 +38,14 @@ class L_SHADE(SHADE):
         new_scores = np.zeros(self.population_size)
         S_F, S_cr = [], []
         diffs = []
+        prs = self.get_rank_probabilities()
 
         for i in range(self.population_size):
             F = self.generate_F()
             cr = self.generate_cr()
 
             p = np.random.randint(2, int(0.2 * self.population_size))
-            mutant = self.mutation(F, self.mutation_type, current=i, p=p)
+            mutant = self.mutation(F, self.mutation_type, current=i, p=p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:

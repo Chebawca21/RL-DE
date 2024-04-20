@@ -6,6 +6,7 @@ class DifferentialEvolution:
         self.D = dimension
         self.func = func
         self.population_size = population_size
+        self.rank_greediness_factor = 3
         self.F = F
         self.cr = cr
         self.mutation_type = mutation_type
@@ -25,7 +26,18 @@ class DifferentialEvolution:
     def initializePopulation(self):
         return 200.0 * np.random.rand(self.population_size, self.D) - 100.0
 
-    def mutation(self, F, type='best', current=None, p=None):
+    def get_rank_probabilities(self):
+        best_idxs = (-self.scores).argsort()
+        ranks = np.zeros(self.population_size)
+        for i, idx in enumerate(best_idxs):
+            ranks[idx] = self.rank_greediness_factor * (self.population_size - i - 1) + 1
+        prs = np.zeros(self.population_size)
+        ranks_sum = sum(ranks)
+        for i in range(self.population_size):
+            prs[i] = ranks[i] / ranks_sum
+        return prs
+
+    def mutation(self, F, type='best', current=None, p=None, prs=None):
         if type == 'rand':
             idxs = np.random.randint(0, self.population_size, 3)
             mutant = self.difference(self.population[idxs[0]], self.population[idxs[1]], self.population[idxs[2]], F)
@@ -59,6 +71,26 @@ class DifferentialEvolution:
             p_best_idxs = self.scores.argsort()[:p]
             p_best = np.random.randint(0, len(p_best_idxs))
             mutant = self.difference(self.population[current], self.population[p_best_idxs[p_best]], self.population[current], F)
+            mutant = self.difference(mutant, random0, random1, F)
+        if type == 'current-to-pbest-r':
+            idx0 = np.random.choice(self.population_size, p=prs)
+            random0 = self.population[idx0]
+            r = np.random.rand()
+            if r < len(self.archive) / (len(self.archive) + self.population_size):
+                idx1 = np.random.randint(0, len(self.archive))
+                random1 = self.archive[idx1]
+            else:
+                idx1 = np.random.choice(self.population_size, p=prs)
+                random1 = self.population[idx1]
+            p_best_idxs = self.scores.argsort()[:p]
+            p_best = np.random.randint(0, len(p_best_idxs))
+            if self.func_evals < 0.2 * self.max_fes:
+                Fw = 0.7
+            elif self.func_evals < 0.4 * self.max_fes:
+                Fw = 0.8
+            else:
+                Fw = 1.2 * F
+            mutant = self.difference(self.population[current], self.population[p_best_idxs[p_best]], self.population[current], Fw)
             mutant = self.difference(mutant, random0, random1, F)
         return mutant
 
@@ -125,9 +157,10 @@ class DifferentialEvolution:
     def step(self):
         new_population = np.zeros_like(self.population)
         new_scores = np.zeros(self.population_size)
+        prs = self.get_rank_probabilities()
 
         for i in range(self.population_size):
-            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p)
+            mutant = self.mutation(self.F, self.mutation_type, current=i, p=self.p, prs=prs)
             candidate = self.crossover(mutant, self.population[i], self.cr, self.crossover_type)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
@@ -152,16 +185,3 @@ class DifferentialEvolution:
                 break
             self.step()
         return self.best_score
-
-# funcs = opfunu.get_functions_by_classname('F32022')
-# func = funcs[0](ndim=2)
-
-# de = DifferentialEvolution(2, func, 10, 0.7, 0.7, 'current-to-pbest')
-# de.mutation(de.F, de.mutation_type, de.population[0], de.p)
-
-# p = 3
-# p_best_idxs = (-de).argsort()[:p]
-# p_best = np.random.randint(0, len(p_best_idxs))
-# print(de.scores)
-# print(p_best_idxs)
-# print(p_best)

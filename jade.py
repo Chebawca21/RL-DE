@@ -7,6 +7,7 @@ class JADE(DifferentialEvolution):
         self.D = dimension
         self.func = func
         self.population_size = population_size
+        self.rank_greediness_factor = 3
         self.archive_size = archive_size
         self.mean_F = 0.5
         self.mean_cr = 0.5
@@ -51,12 +52,13 @@ class JADE(DifferentialEvolution):
         new_population = np.zeros_like(self.population)
         new_scores = np.zeros(self.population_size)
         S_F, S_cr = [], []
+        prs = self.get_rank_probabilities()
 
         for i in range(self.population_size):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p)
+            mutant = self.mutation(F, self.mutation_type, current=i, p=self.p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
             if candidate_score <= self.scores[i]:
