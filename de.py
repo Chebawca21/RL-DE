@@ -1,5 +1,5 @@
 import numpy as np
-
+import opfunu
 
 class DifferentialEvolution:
     def __init__(self, dimension, func, population_size, F, cr, mutation_type='rand', crossover_type='bin', p=0.1, archive_size=None):
@@ -48,15 +48,18 @@ class DifferentialEvolution:
             mutant = self.difference(self.population[idxs[best_id]], self.population[idxs[1]], self.population[idxs[2]], F)
         if type == 'current-to-pbest':
             idx0 = np.random.randint(0, self.population_size)
-            if not self.archive:
-                pop_and_arch = np.concatenate((self.population, np.reshape([], (0, self.D))))
+            random0 = self.population[idx0]
+            r = np.random.rand()
+            if r < len(self.archive) / (len(self.archive) + self.population_size):
+                idx1 = np.random.randint(0, len(self.archive))
+                random1 = self.archive[idx1]
             else:
-                pop_and_arch = np.concatenate((self.population, self.archive))
-            idx1 = np.random.randint(0, len(pop_and_arch))
+                idx1 = np.random.randint(0, self.population_size)
+                random1 = self.population[idx1]
             p_best_idxs = self.scores.argsort()[:p]
             p_best = np.random.randint(0, len(p_best_idxs))
             mutant = self.difference(self.population[current], self.population[p_best_idxs[p_best]], self.population[current], F)
-            mutant = self.difference(mutant, self.population[idx0], pop_and_arch[idx1], F)
+            mutant = self.difference(mutant, random0, random1, F)
         return mutant
 
     def difference(self, a, b, c, F):
@@ -149,3 +152,16 @@ class DifferentialEvolution:
                 break
             self.step()
         return self.best_score
+
+# funcs = opfunu.get_functions_by_classname('F32022')
+# func = funcs[0](ndim=2)
+
+# de = DifferentialEvolution(2, func, 10, 0.7, 0.7, 'current-to-pbest')
+# de.mutation(de.F, de.mutation_type, de.population[0], de.p)
+
+# p = 3
+# p_best_idxs = (-de).argsort()[:p]
+# p_best = np.random.randint(0, len(p_best_idxs))
+# print(de.scores)
+# print(p_best_idxs)
+# print(p_best)
