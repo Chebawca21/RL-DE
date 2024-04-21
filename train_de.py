@@ -7,6 +7,8 @@ from de import DifferentialEvolution
 from cde import CDE
 from jade import JADE
 from shade import SHADE
+from l_shade import L_SHADE
+from l_shade_rsp import L_SHADE_RSP
 from qde import QDE
 
 MAX_FES_10 = 200000
@@ -36,6 +38,15 @@ C = 0.1
 MEMORY_SIZE = POPULATION_SIZE
 ARCHIVE_SIZE = POPULATION_SIZE
 
+# L_SHADE
+L_SHADE_MEMORY_SIZE = 5
+R_N_INIT = 20
+R_ARC = 2
+MIN_POPULATION_SIZE = 4
+
+# L_SHADE_RSP
+MAX_POPULATION_SCALAR = 75
+
 N_JOBS = -1
 
 def get_seed(problem_size, func_num, runs, run_id):
@@ -48,7 +59,7 @@ def get_seed(problem_size, func_num, runs, run_id):
 def count_fes(D, k, max_fes):
     return D ** (k/5 - 3) * max_fes
 
-def get_de(D, func, model='de'):
+def get_de(D, func, max_fes, model='de'):
     if model == 'de':
         de = DifferentialEvolution(D, func, POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
     elif model == 'cde':
@@ -56,6 +67,11 @@ def get_de(D, func, model='de'):
     elif model == 'jade':
         de = JADE(D, func, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
     elif model == 'shade':
+        de = SHADE(D, func, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
+    elif model == 'l_shade':
+        max_population_size = int(D * R_N_INIT)
+        de = L_SHADE(D, func, max_population_size, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, max_population_size)
+    elif model == 'l_shade_rsp':
         de = SHADE(D, func, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
     elif model == 'qde':
         de = QDE(D, func, POPULATION_SIZE, MUTATION_TYPE)
@@ -65,14 +81,14 @@ def single_run(D, func, func_num, run_id, model='de'):
     seed = get_seed(D, func_num, N_RUNS, run_id)
     np.random.seed(seed)
 
-    de = get_de(D, func(ndim=D), model)
-
-    if de.D == 10:
+    if D == 10:
         max_fes = MAX_FES_10
-    elif de.D == 20:
+    elif D == 20:
         max_fes = MAX_FES_20
     else:
         max_fes = MAX_FES_OTHER
+
+    de = get_de(D, func(ndim=D), max_fes, model)
 
     k = 0
     fes = count_fes(de.D, k, max_fes)
@@ -156,10 +172,9 @@ def train(Ds, funcs, model='de'):
 
         t2s = []
         for _ in range(5):
-            de = get_de(D, funcs[0](ndim=D), model)
+            de = get_de(D, funcs[0](ndim=D), 200000, model)
             start_t2 = time.perf_counter()
-            for _ in range(int(200000 / POPULATION_SIZE)):
-                de.step()
+            de.train(200000)
             end_t2 = time.perf_counter()
             t2s.append(end_t2 - start_t2)
         t2 = np.mean(t2s)
@@ -176,4 +191,7 @@ if __name__ == '__main__':
     cec = "2022"
     funcs = opfunu.get_functions_based_classname(cec)
     funcs.sort(key=lambda x: int(x.__name__[1:-4]))
-    train(Ds, funcs, 'qde')
+    train(Ds, funcs, 'de')
+    train(Ds, funcs, 'cde')
+    train(Ds, funcs, 'jade')
+    train(Ds, funcs, 'shade')
