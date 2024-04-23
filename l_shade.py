@@ -44,7 +44,11 @@ class L_SHADE(SHADE):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            p = np.random.randint(2, int(0.2 * self.population_size))
+            p_high_bound = max(2, int(0.2 * self.population_size))
+            if p_high_bound <= 2:
+                p = 2
+            else:
+                p = np.random.randint(2, p_high_bound)
             mutant = self.mutation(F, self.mutation_type, current=i, p=p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
