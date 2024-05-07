@@ -188,6 +188,8 @@ class RL_HPSDE(DifferentialEvolution):
         new_population_size = max(int(new_population_size), 1)
         optimal = sorted(zip(new_scores, new_population), key=lambda x: x[0])[:new_population_size]
         new_scores, new_population = zip(*optimal)
+        new_population = np.array(new_population)
+        new_scores = np.array(new_scores)
         return new_population_size, new_population, new_scores
 
     def step(self):
