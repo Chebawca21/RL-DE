@@ -10,6 +10,7 @@ from shade import SHADE
 from l_shade import L_SHADE
 from l_shade_rsp import L_SHADE_RSP
 from qde import QDE
+from rl_hpsde import RL_HPSDE
 
 MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
@@ -40,17 +41,22 @@ ARCHIVE_SIZE = POPULATION_SIZE
 
 # L_SHADE
 L_SHADE_MEMORY_SIZE = 5
-R_N_INIT = 20
+R_N_INIT = 18
 R_ARC = 2
 MIN_POPULATION_SIZE = 4
 
 # L_SHADE_RSP
 MAX_POPULATION_SCALAR = 75
 
+# RL_HPSDE
+NUM_STEPS = 200
+STEP_SIZE = 10
+TRAIN_FILE = "qtable.txt"
+
 N_JOBS = -1
 
 def get_seed(problem_size, func_num, runs, run_id):
-    with open("SO_BO/input_data/Rand_Seeds.txt") as f:
+    with open("Rand_Seeds.txt") as f:
         lines = f.read().splitlines()
     seed_id = (problem_size // 10 * func_num * runs + run_id) - runs
     seed_id = seed_id % 1000
@@ -72,9 +78,17 @@ def get_de(D, func, max_fes, model='de'):
         max_population_size = int(D * R_N_INIT)
         de = L_SHADE(D, func, max_population_size, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, max_population_size)
     elif model == 'l_shade_rsp':
-        de = SHADE(D, func, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
+        de = L_SHADE_RSP(D, func, MAX_POPULATION_SCALAR * D, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, MAX_POPULATION_SCALAR * D)
     elif model == 'qde':
         de = QDE(D, func, POPULATION_SIZE, MUTATION_TYPE)
+    elif model == 'rl_hpsde_train':
+        max_population_size = int(D * R_N_INIT)
+        de = RL_HPSDE(D, func, max_population_size, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, NUM_STEPS, STEP_SIZE)
+        de.qlearning.load_qtable(TRAIN_FILE)
+    elif model == 'rl_hpsde_test':
+        max_population_size = int(D * R_N_INIT)
+        de = RL_HPSDE(D, func, max_population_size, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, NUM_STEPS, STEP_SIZE)
+        de.qlearning.load_qtable(TRAIN_FILE)
     return de
 
 def single_run(D, func, func_num, run_id, model='de'):
@@ -108,6 +122,8 @@ def single_run(D, func, func_num, run_id, model='de'):
             break
         de.step()
 
+    if model == 'rl_hpsde_train':
+        de.qlearning.save_qtable(TRAIN_FILE)
     scores.append(de.func_evals)
     return scores
 
@@ -187,11 +203,21 @@ def train(Ds, funcs, model='de'):
     print(f"Finished for model {model}", "\n\n", f"Total time: {end_total - start_total} seconds")
             
 if __name__ == '__main__':
-    Ds = [10, 20]
+    # Ds = [10, 20]
+    # cec = "2021"
+    # funcs = opfunu.get_functions_based_classname(cec)
+    # funcs.sort(key=lambda x: int(x.__name__[1:-4]))
+    # for D in Ds:
+    #     for func_num, func in enumerate(funcs):
+    #         for run in range(N_RUNS):
+    #             start = time.perf_counter()
+    #             single_run(D, func, func_num, run, 'rl_hpsde_train') 
+    #             end = time.perf_counter()
+    #             print(f"Finished D={D} and func_num={func_num} in {end - start} seconds.")
+
+    Ds = [10]
     cec = "2022"
     funcs = opfunu.get_functions_based_classname(cec)
     funcs.sort(key=lambda x: int(x.__name__[1:-4]))
-    train(Ds, funcs, 'de')
-    train(Ds, funcs, 'cde')
-    train(Ds, funcs, 'jade')
-    train(Ds, funcs, 'shade')
+    funcs = funcs[8:9]
+    train(Ds, funcs, 'l_shade')
