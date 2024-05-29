@@ -121,7 +121,6 @@ class RL_HPSDE(DifferentialEvolution):
         return np.max(information_entropies)
 
     def get_state(self):
-        self.func_evals += self.num_steps
         walk = self.progressive_random_walk()
         f = np.zeros(self.num_steps)
         for i, point in enumerate(walk):
@@ -221,7 +220,6 @@ class RL_HPSDE(DifferentialEvolution):
                 new_population[i] = candidate
                 new_scores[i] = candidate_score
             else:
-                # self.qlearning.update_qtable(self.state, self.state, (F, cr), -0.5)
                 new_population[i] = self.population[i]
                 new_scores[i] = self.scores[i]
             if candidate_score < self.scores[i]:
@@ -245,14 +243,3 @@ class RL_HPSDE(DifferentialEvolution):
 
     def next_func_evals(self):
         return self.func_evals + self.population_size + self.num_steps
-
-
-# rl_hpsde = RL_HPSDE(2, 10, 5, 3, 205, 10)
-# new_population = ["a", "b", "c", "d", "e"]
-# new_scores = [1, 3, 2, 5, 4]
-# rl_hpsde.adjust_population_size(new_population, new_scores)
-    
-
-# rl_hpsde = RL_HPSDE(2, 10, 50, 5)
-# walk = rl_hpsde.progressive_random_walk()
-# rl_hpsde.draw_walk(walk)
