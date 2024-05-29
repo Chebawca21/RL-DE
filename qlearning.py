@@ -23,7 +23,10 @@ class QLearning:
             if r > self.epsilon:
                 action_index = np.random.randint(self.n_actions)
             else:
-                action_index = np.argmax(self.qtable[state_index])
+                action_indexes = np.argwhere(self.qtable[state_index] == np.max(self.qtable[state_index]))
+                action_indexes = action_indexes.flatten()
+                i = np.random.randint(len(action_indexes))
+                action_index = action_indexes[i]
         if self.selection_strategy == 'boltzmann':
             max_Q = np.max(self.qtable)
             if max_Q == 0:
@@ -56,7 +59,7 @@ if __name__ == '__main__':
     states = ['a', 'b', 'c', 'd', 'e']
     actions = ['up', 'down', 'right', 'left']
     ql = QLearning(states, actions)
-    ql.load_qtable("qtable.txt")
+    # ql.load_qtable("qtable.txt")
     print(ql.qtable)
 
     action = ql.get_action('a')
