@@ -1,9 +1,9 @@
 import numpy as np
-from shade import SHADE
+from models.l_shade import L_SHADE
 
 
-class L_SHADE(SHADE):
-    def __init__(self, dimension, func, max_population_size, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest'):
+class L_SHADE_RSP(L_SHADE):
+    def __init__(self, dimension, func, max_population_size, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest-r'):
         self.D = dimension
         self.func = func
         self.population_size = max_population_size
@@ -12,8 +12,8 @@ class L_SHADE(SHADE):
         self.max_fes = max_fes
         self.rank_greediness_factor = 3
         self.memory_size = memory_size
-        self.memory_F = np.full((self.memory_size, 1), 0.5)
-        self.memory_cr = np.full((self.memory_size, 1), 0.5)
+        self.memory_F = np.full((self.memory_size, 1), 0.3)
+        self.memory_cr = np.full((self.memory_size, 1), 0.8)
         self.k = 0
         self.archive_size = archive_size
         self.mutation_type = mutation_type
@@ -24,14 +24,39 @@ class L_SHADE(SHADE):
         self.archive = []
         self.evaluate_population()
 
-    def adjust_population_size(self, new_population, new_scores):
-        new_population_size = np.round(((self.min_population_size - self.max_population_size) / self.max_fes * self.func_evals) + self.max_population_size)
-        new_population_size = max(int(new_population_size), 1)
-        optimal = sorted(zip(new_scores, new_population), key=lambda x: x[0])[:new_population_size]
-        new_scores, new_population = zip(*optimal)
-        new_population = np.array(new_population)
-        new_scores = np.array(new_scores)
-        return new_population_size, new_population, new_scores
+    def generate_F(self):
+        F = -1
+        r = np.random.randint(0, self.memory_size + 1)
+        if r == self.memory_size:
+            mean = 0.9
+        else:
+            mean = self.memory_F[r]
+
+        while F <= 0:
+            F = np.random.standard_cauchy()
+            F = mean + (F * 0.1)
+        if F > 1:
+            F = 1
+        return F
+
+    def generate_cr(self):
+        cr = -1
+        r = np.random.randint(0, self.memory_size + 1)
+        if r == self.memory_size:
+            mean = 0.9
+        else:
+            mean = self.memory_cr[r]
+
+        while cr <= 0:
+            cr = np.random.normal(mean, 0.1)
+        if cr > 1:
+            cr = 1
+
+        if self.func_evals < 0.25 * self.max_fes:
+            cr = max(cr, 0.7)
+        elif self.func_evals < 0.5 * self.max_fes:
+            cr = max(cr, 0.6)
+        return cr
 
     def step(self):
         new_population = np.zeros_like(self.population)

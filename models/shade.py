@@ -1,5 +1,5 @@
 import numpy as np
-from jade import JADE
+from models.jade import JADE
 
 
 class SHADE(JADE):

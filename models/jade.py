@@ -1,5 +1,5 @@
 import numpy as np
-from de import DifferentialEvolution
+from models.de import DifferentialEvolution
 
 
 class JADE(DifferentialEvolution):

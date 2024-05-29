@@ -1,6 +1,6 @@
 import numpy as np
 from itertools import product
-from de import DifferentialEvolution
+from models.de import DifferentialEvolution
 
 
 class CDE(DifferentialEvolution):

@@ -2,14 +2,14 @@ import time
 import numpy as np
 import opfunu
 from joblib import Parallel, delayed
-from de import DifferentialEvolution
-from cde import CDE
-from jade import JADE
-from shade import SHADE
-from l_shade import L_SHADE
-from l_shade_rsp import L_SHADE_RSP
-from qde import QDE
-from rl_hpsde import RL_HPSDE
+from models.de import DifferentialEvolution
+from models.cde import CDE
+from models.jade import JADE
+from models.shade import SHADE
+from models.l_shade import L_SHADE
+from models.l_shade_rsp import L_SHADE_RSP
+from models.qde import QDE
+from models.rl_hpsde import RL_HPSDE
 
 MAX_FES_10 = 200000
 MAX_FES_20 = 1000000

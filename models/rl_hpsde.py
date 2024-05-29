@@ -1,5 +1,5 @@
 import numpy as np
-from de import DifferentialEvolution
+from models.de import DifferentialEvolution
 from qlearning import QLearning
 from scipy.stats import levy
 import matplotlib.pyplot as plt

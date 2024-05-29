@@ -1,6 +1,6 @@
 import numpy as np
 from itertools import product
-from de import DifferentialEvolution
+from models.de import DifferentialEvolution
 from qlearning import QLearning
 
 class QDE(DifferentialEvolution):
