@@ -1,8 +1,8 @@
 import time
 import numpy as np
 import pandas as pd
-import opfunu
 from joblib import Parallel, delayed
+from pathlib import Path
 from models.de import DifferentialEvolution
 from models.cde import CDE
 from models.jade import JADE
@@ -94,19 +94,20 @@ def single_run(D, func_name, func_num, run_id, model='de'):
     return scores
 
 def train(Ds, funcs_names, model='de'):
+    model_path = f"out/{model}"
+    Path(model_path).mkdir(parents=True, exist_ok=True)
     start_total = time.perf_counter()
     for D in Ds:
-        results_file_name = f"out/{model}_{D}.txt"
-        results_file_name_tex = f"out/{model}_{D}.tex"
+        results_file_name = f"{model_path}/{model}_{D}.txt"
+        results_file_name_tex = f"{model_path}/{model}_{D}.tex"
         results = []
         columns = ["Best", "Worst", "Median", "Mean", "Std"]
-        func_nums = [int(x.__name__[1:-4]) for x in funcs_names]
         for id, func_name in enumerate(funcs_names):
             start = time.perf_counter()
-            data = Parallel(n_jobs=N_JOBS)(delayed(single_run)(D, func_name, func_nums[id], run_id, model) for run_id in range(N_RUNS))
+            data = Parallel(n_jobs=N_JOBS)(delayed(single_run)(D, func_name, id + 1, run_id, model) for run_id in range(N_RUNS))
             end = time.perf_counter()
-            print(f"Finished D={D} and func_num={func_nums[id]} for model {model} in {end - start} seconds.")
-            file_name = f"out/{model}_{func_name}_{D}.txt"
+            print(f"Finished D={D} and func_num={id + 1} for model {model} in {end - start} seconds.")
+            file_name = f"{model_path}/{model}_{func_name}_{D}.txt"
             df = []
             for i in range(17):
                 row = []
@@ -122,7 +123,7 @@ def train(Ds, funcs_names, model='de'):
             mean = np.mean(scores)
             std = np.std(scores)
             results.append([best, worst, median, mean, std])
-        results = pd.DataFrame(results, columns=columns, index=func_nums)
+        results = pd.DataFrame(results, columns=columns, index=range(1, len(funcs_names) + 1))
         results.to_string(results_file_name, float_format="{:.8f}".format)
         results.to_latex(results_file_name_tex, float_format="{:.8f}".format)
     
@@ -139,16 +140,17 @@ def train(Ds, funcs_names, model='de'):
     end_t0 = time.perf_counter()
     t0 = end_t0 - start_t0
 
-    times_file_name = f"out/{model}_times.txt"
-    times_file_name_tex = f"out/{model}_times.tex"
+    times_file_name = f"{model_path}/{model}_times.txt"
+    times_file_name_tex = f"{model_path}/{model}_times.tex"
     times = []
     columns = ['T0', "T1", "T2", "(T2 - T1) / T0"]
     index = Ds
     for D in Ds:
+        max_fes = MAX_FES_10
         params = get_model_parameters("de", D, funcs_names[0])
         de = DifferentialEvolution(**params)
         start_t1 = time.perf_counter()
-        for _ in range(int(200000 / POPULATION_SIZE)):
+        for _ in range(int(max_fes / de.population_size)):
             de.evaluate_population()
         end_t1 = time.perf_counter()
         t1 = end_t1 - start_t1
@@ -184,4 +186,6 @@ if __name__ == '__main__':
     Ds = [10]
     cec = "2022"
     funcs_names = get_cec_funcs(cec)
-    train(Ds, funcs_names, 'l_shade')
+    funcs_names = funcs_names[:2]
+    train(Ds, funcs_names, 'de')
+    train(Ds, funcs_names, 'shade')
