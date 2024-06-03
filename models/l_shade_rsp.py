@@ -3,11 +3,11 @@ from models.l_shade import L_SHADE
 
 
 class L_SHADE_RSP(L_SHADE):
-    def __init__(self, dimension, func, max_population_size, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest-r'):
+    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest-r'):
         self.D = dimension
         self.func = func
-        self.population_size = max_population_size
-        self.max_population_size = max_population_size
+        self.population_size = max_population_scalar * self.D
+        self.max_population_size = max_population_scalar * self.D
         self.min_population_size = min_population_size
         self.max_fes = max_fes
         self.rank_greediness_factor = 3

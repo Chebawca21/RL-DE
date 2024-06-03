@@ -11,6 +11,7 @@ from models.l_shade import L_SHADE
 from models.l_shade_rsp import L_SHADE_RSP
 from models.qde import QDE
 from models.rl_hpsde import RL_HPSDE
+from config import get_model_parameters, get_cec_funcs
 
 MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
@@ -18,39 +19,6 @@ MAX_FES_OTHER = 10000
 MIN_ERROR = 10 ** (-8)
 N_RUNS = 30
 
-POPULATION_SIZE = 50
-
-# Differential Evolution
-F = 0.8
-CR = 0.8
-MUTATION_TYPE = 'current-to-best'
-CROSSOVER_TYPE = 'bin'
-
-# CDE
-STRAT_CONSTANT = 2
-DELTA = 1/45
-
-# JADE
-ARCHIVE_SIZE = POPULATION_SIZE
-P = 0.1
-C = 0.1
-
-# SHADE
-MEMORY_SIZE = POPULATION_SIZE
-ARCHIVE_SIZE = POPULATION_SIZE
-
-# L_SHADE
-L_SHADE_MEMORY_SIZE = 5
-R_N_INIT = 18
-R_ARC = 2
-MIN_POPULATION_SIZE = 4
-
-# L_SHADE_RSP
-MAX_POPULATION_SCALAR = 75
-
-# RL_HPSDE
-NUM_STEPS = 200
-STEP_SIZE = 10
 TRAIN_FILE = "qtable.txt"
 
 N_JOBS = -1
@@ -66,32 +34,30 @@ def count_fes(D, k, max_fes):
     return D ** (k/5 - 3) * max_fes
 
 def get_de(D, func, max_fes, model='de'):
+    params = get_model_parameters(model, D, func)
     if model == 'de':
-        de = DifferentialEvolution(D, func, POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
+        de = DifferentialEvolution(**params)
     elif model == 'cde':
-        de = CDE(D, func, POPULATION_SIZE, STRAT_CONSTANT, DELTA)
+        de = CDE(**params)
     elif model == 'jade':
-        de = JADE(D, func, POPULATION_SIZE, ARCHIVE_SIZE, P, C)
+        de = JADE(**params)
     elif model == 'shade':
-        de = SHADE(D, func, POPULATION_SIZE, MEMORY_SIZE, ARCHIVE_SIZE)
+        de = SHADE(**params)
     elif model == 'l_shade':
-        max_population_size = int(D * R_N_INIT)
-        de = L_SHADE(D, func, max_population_size, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, max_population_size)
+        de = L_SHADE(**params)
     elif model == 'l_shade_rsp':
-        de = L_SHADE_RSP(D, func, MAX_POPULATION_SCALAR * D, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, MAX_POPULATION_SCALAR * D)
+        de = L_SHADE_RSP(**params)
     elif model == 'qde':
-        de = QDE(D, func, POPULATION_SIZE, MUTATION_TYPE)
+        de = QDE(**params)
     elif model == 'rl_hpsde_train':
-        max_population_size = int(D * R_N_INIT)
-        de = RL_HPSDE(D, func, max_population_size, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, NUM_STEPS, STEP_SIZE)
+        de = RL_HPSDE(**params)
         de.qlearning.load_qtable(TRAIN_FILE)
     elif model == 'rl_hpsde_test':
-        max_population_size = int(D * R_N_INIT)
-        de = RL_HPSDE(D, func, max_population_size, MIN_POPULATION_SIZE, max_fes, L_SHADE_MEMORY_SIZE, NUM_STEPS, STEP_SIZE)
+        de = RL_HPSDE(**params)
         de.qlearning.load_qtable(TRAIN_FILE)
     return de
 
-def single_run(D, func, func_num, run_id, model='de'):
+def single_run(D, func_name, func_num, run_id, model='de'):
     seed = get_seed(D, func_num, N_RUNS, run_id)
     np.random.seed(seed)
 
@@ -102,7 +68,7 @@ def single_run(D, func, func_num, run_id, model='de'):
     else:
         max_fes = MAX_FES_OTHER
 
-    de = get_de(D, func(ndim=D), max_fes, model)
+    de = get_de(D, func_name, max_fes, model)
 
     k = 0
     fes = count_fes(de.D, k, max_fes)
@@ -127,20 +93,20 @@ def single_run(D, func, func_num, run_id, model='de'):
     scores.append(de.func_evals)
     return scores
 
-def train(Ds, funcs, model='de'):
+def train(Ds, funcs_names, model='de'):
     start_total = time.perf_counter()
     for D in Ds:
         results_file_name = f"out/{model}_{D}.txt"
         results_file_name_tex = f"out/{model}_{D}.tex"
         results = []
         columns = ["Best", "Worst", "Median", "Mean", "Std"]
-        func_nums = [int(x.__name__[1:-4]) for x in funcs]
-        for id, func in enumerate(funcs):
+        func_nums = [int(x.__name__[1:-4]) for x in funcs_names]
+        for id, func_name in enumerate(funcs_names):
             start = time.perf_counter()
-            data = Parallel(n_jobs=N_JOBS)(delayed(single_run)(D, func, func_nums[id], run_id, model) for run_id in range(N_RUNS))
+            data = Parallel(n_jobs=N_JOBS)(delayed(single_run)(D, func_name, func_nums[id], run_id, model) for run_id in range(N_RUNS))
             end = time.perf_counter()
             print(f"Finished D={D} and func_num={func_nums[id]} for model {model} in {end - start} seconds.")
-            file_name = f"out/{model}_{func.__name__}_{D}.txt"
+            file_name = f"out/{model}_{func_name}_{D}.txt"
             df = []
             for i in range(17):
                 row = []
@@ -179,7 +145,8 @@ def train(Ds, funcs, model='de'):
     columns = ['T0', "T1", "T2", "(T2 - T1) / T0"]
     index = Ds
     for D in Ds:
-        de = DifferentialEvolution(D, funcs[0](ndim=D), POPULATION_SIZE, F, CR, MUTATION_TYPE, CROSSOVER_TYPE)
+        params = get_model_parameters("de", D, funcs_names[0])
+        de = DifferentialEvolution(**params)
         start_t1 = time.perf_counter()
         for _ in range(int(200000 / POPULATION_SIZE)):
             de.evaluate_population()
@@ -188,7 +155,7 @@ def train(Ds, funcs, model='de'):
 
         t2s = []
         for _ in range(5):
-            de = get_de(D, funcs[0](ndim=D), 200000, model)
+            de = get_de(D, funcs_names[0], 200000, model)
             start_t2 = time.perf_counter()
             de.train(200000)
             end_t2 = time.perf_counter()
@@ -205,19 +172,16 @@ def train(Ds, funcs, model='de'):
 if __name__ == '__main__':
     # Ds = [10, 20]
     # cec = "2021"
-    # funcs = opfunu.get_functions_based_classname(cec)
-    # funcs.sort(key=lambda x: int(x.__name__[1:-4]))
+    # funcs_names = get_cec_funcs(cec)
     # for D in Ds:
-    #     for func_num, func in enumerate(funcs):
+    #     for func_num, func_name in enumerate(funcs_names):
     #         for run in range(N_RUNS):
     #             start = time.perf_counter()
-    #             single_run(D, func, func_num, run, 'rl_hpsde_train') 
+    #             single_run(D, func_name, func_num, run, 'rl_hpsde_train') 
     #             end = time.perf_counter()
-    #             print(f"Finished D={D} and func_num={func_num} in {end - start} seconds.")
+    #             print(f"Finished D={D} and func={func_name} in {end - start} seconds.")
 
     Ds = [10]
     cec = "2022"
-    funcs = opfunu.get_functions_based_classname(cec)
-    funcs.sort(key=lambda x: int(x.__name__[1:-4]))
-    funcs = funcs[8:9]
-    train(Ds, funcs, 'l_shade')
+    funcs_names = get_cec_funcs(cec)
+    train(Ds, funcs_names, 'l_shade')

@@ -5,11 +5,11 @@ from scipy.stats import levy
 import matplotlib.pyplot as plt
 
 class RL_HPSDE(DifferentialEvolution):
-    def __init__(self, dimension, func, max_population_size, min_population_size, max_fes, memory_size, num_steps=200, step_size=10, p=0.1, archive_size=None):
+    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, num_steps=200, step_size=10, p=0.1, archive_size=None):
         self.D = dimension
         self.func = func
-        self.population_size = max_population_size
-        self.max_population_size = max_population_size
+        self.population_size = max_population_scalar * self.D
+        self.max_population_size = max_population_scalar * self.D
         self.min_population_size = min_population_size
         self.max_fes = max_fes
         self.rank_greediness_factor = 3
@@ -22,9 +22,9 @@ class RL_HPSDE(DifferentialEvolution):
         actions = [*range(1, 5)]
         states = [*range(1, 5)]
         self.qlearning = QLearning(states, actions, selection_strategy='boltzmann')
-        self.p = int(p * max_population_size)
+        self.p = int(p * self.population_size)
         if archive_size is None:
-            self.archive_size = max_population_size
+            self.archive_size = self.population_size
         else:
             self.archive_size = archive_size
         self.func_evals = 0

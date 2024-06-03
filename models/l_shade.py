@@ -3,11 +3,11 @@ from models.shade import SHADE
 
 
 class L_SHADE(SHADE):
-    def __init__(self, dimension, func, max_population_size, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest'):
+    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest'):
         self.D = dimension
         self.func = func
-        self.population_size = max_population_size
-        self.max_population_size = max_population_size
+        self.population_size = max_population_scalar * self.D
+        self.max_population_size = max_population_scalar * self.D
         self.min_population_size = min_population_size
         self.max_fes = max_fes
         self.rank_greediness_factor = 3

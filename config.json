@@ -1,0 +1,120 @@
+{
+    "models": {
+        "de": {
+            "population_size":       50,
+            "F":                     0.8,
+            "cr":                    0.8,
+            "mutation_type":         "current-to-best",
+            "crossover_type":        "bin",
+            "p":                     0.1,
+            "archive_size":          null
+        },
+        "cde": {
+            "population_size":       50,
+            "strat_constant":        2,
+            "inverse_delta":         45,
+            "mutation_type":         "randrl",
+            "p":                     0.1,
+            "archive_size":          null
+        },
+        "jade": {
+            "population_size":       50,
+            "archive_size":          50,
+            "p":                     0.1,
+            "c":                     0.1,
+            "mutation_type":         "current-to-pbest"
+        },
+        "shade": {
+            "population_size":       50,
+            "memory_size":           50,
+            "archive_size":          50,
+            "mutation_type":         "current-to-pbest"
+        },
+        "l-shade": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           50,
+            "archive_size":          50,
+            "mutation_type":         "current-to-pbest"
+        },
+        "l-shade-rsp": {
+            "max_population_scalar": 75,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           50,
+            "archive_size":          50,
+            "mutation_type":         "current-to-pbest-r"
+        },
+        "qde": {
+            "population_size":       50,
+            "mutation_type":         "best",
+            "p":                     0.1,
+            "archive_size":          null
+        },
+        "rl-hpsde": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_steps":             200,
+            "step_size":             10,
+            "p":                     0.1,
+            "archive_size":          null
+        },
+        "rl_hpsde_train": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_steps":             200,
+            "step_size":             10,
+            "p":                     0.1,
+            "archive_size":          null
+        },
+        "rl_hpsde_test": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_steps":             200,
+            "step_size":             10,
+            "p":                     0.1,
+            "archive_size":          null
+        }
+    },
+    "max_fes": {
+        "10": 200000,
+        "20": 1000000
+    },
+    "D": 10,
+    "n_runs": 5,
+    "cec": {
+        "2022": [
+            "F12022",
+            "F22022",
+            "F32022",
+            "F42022",
+            "F52022",
+            "F62022",
+            "F72022",
+            "F82022",
+            "F92022",
+            "F102022",
+            "F112022",
+            "F122022"
+        ],
+        "2021": [
+            "F12021",
+            "F22021",
+            "F32021",
+            "F42021",
+            "F52021",
+            "F62021",
+            "F72021",
+            "F82021",
+            "F92021",
+            "F102021"
+        ]
+    }
+}
