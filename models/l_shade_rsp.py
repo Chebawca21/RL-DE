@@ -3,11 +3,11 @@ from models.l_shade import L_SHADE
 
 
 class L_SHADE_RSP(L_SHADE):
-    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest-r'):
+    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, mutation_type='current-to-pbest-r'):
         self.D = dimension
         self.func = func
-        self.population_size = max_population_scalar * self.D
-        self.max_population_size = max_population_scalar * self.D
+        self.population_size = int(max_population_scalar * pow(self.D, 2 / 3))
+        self.max_population_size = self.population_size
         self.min_population_size = min_population_size
         self.max_fes = max_fes
         self.rank_greediness_factor = 3
@@ -15,7 +15,7 @@ class L_SHADE_RSP(L_SHADE):
         self.memory_F = np.full((self.memory_size, 1), 0.3)
         self.memory_cr = np.full((self.memory_size, 1), 0.8)
         self.k = 0
-        self.archive_size = archive_size
+        self.archive_size = self.population_size
         self.mutation_type = mutation_type
         self.func_evals = 0
         self.best_individual = None
@@ -69,11 +69,7 @@ class L_SHADE_RSP(L_SHADE):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            p_high_bound = max(2, int(0.2 * self.population_size))
-            if p_high_bound <= 2:
-                p = 2
-            else:
-                p = np.random.randint(2, p_high_bound)
+            p = max(2 , 0.085 + (0.085 * self.func_evals / self.max_fes))
             mutant = self.mutation(F, self.mutation_type, current=i, p=p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)

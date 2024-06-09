@@ -3,11 +3,11 @@ from models.shade import SHADE
 
 
 class L_SHADE(SHADE):
-    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, archive_size, mutation_type='current-to-pbest'):
+    def __init__(self, dimension, func, r_n_init, min_population_size, max_fes, memory_size, r_arc, p, mutation_type='current-to-pbest'):
         self.D = dimension
         self.func = func
-        self.population_size = max_population_scalar * self.D
-        self.max_population_size = max_population_scalar * self.D
+        self.population_size = r_n_init * self.D
+        self.max_population_size = r_n_init * self.D
         self.min_population_size = min_population_size
         self.max_fes = max_fes
         self.rank_greediness_factor = 3
@@ -15,7 +15,9 @@ class L_SHADE(SHADE):
         self.memory_F = np.full((self.memory_size, 1), 0.5)
         self.memory_cr = np.full((self.memory_size, 1), 0.5)
         self.k = 0
-        self.archive_size = archive_size
+        self.r_arc = r_arc
+        self.archive_size = int(r_arc * self.population_size)
+        self.p = p
         self.mutation_type = mutation_type
         self.func_evals = 0
         self.best_individual = None
@@ -44,11 +46,7 @@ class L_SHADE(SHADE):
             F = self.generate_F()
             cr = self.generate_cr()
 
-            p_high_bound = max(2, int(0.2 * self.population_size))
-            if p_high_bound <= 2:
-                p = 2
-            else:
-                p = np.random.randint(2, p_high_bound)
+            p = max(2, int(self.p * self.population_size))
             mutant = self.mutation(F, self.mutation_type, current=i, p=p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
@@ -72,6 +70,6 @@ class L_SHADE(SHADE):
             if self.k >= self.memory_size:
                 self.k = 0
         self.population_size, self.population, self.scores = self.adjust_population_size(new_population, new_scores)
-        self.archive_size = self.population_size
+        self.archive_size = int(self.r_arc * self.population_size)
         self.resize_archive()
         self.update_best_score()
