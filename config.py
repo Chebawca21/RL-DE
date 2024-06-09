@@ -1,5 +1,6 @@
 import json
 import opfunu
+from adjust_cec2022 import adjust_cec_functions
 
 def getConfig():
     with open("config.json") as f:
@@ -7,6 +8,7 @@ def getConfig():
     return config
 
 def get_model_parameters(model_name, D, func_name):
+    adjust_cec_functions()
     config = getConfig()
     model = config['models'][model_name]
     if 'max_fes' in model:
