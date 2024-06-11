@@ -238,6 +238,7 @@ class RL_HPSDE(DifferentialEvolution):
         reward = len(S_F) / self.population_size
         next_state = self.get_state()
         self.qlearning.update_qtable(self.state, next_state, action, reward)
+        self.state = next_state
         self.population_size, self.population, self.scores = self.adjust_population_size(new_population, new_scores)
         self.update_best_score()
 

@@ -10,11 +10,12 @@ from models.l_shade import L_SHADE
 from models.l_shade_rsp import L_SHADE_RSP
 from models.qde import QDE
 from models.rl_hpsde import RL_HPSDE
+from models.rl_hpsde_n_walks import RL_HPSDE_N_WALKS
 from config import get_model_parameters
 
-MAX_FES_10 = 2000
+MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
-N_RUNS = 5
+N_RUNS = 30
 
 D = 10
 FUNC = 'F32022'
@@ -65,8 +66,15 @@ def train_qde(max_fes):
     return best_score
 
 def train_rl_hpsde(max_fes):
-    params = get_model_parameters("rl-hpsde", D, FUNC)
+    params = get_model_parameters("rl-hpsde-test", D, FUNC)
     rl_hpsde = RL_HPSDE(**params)
+    best_score = rl_hpsde.train(max_fes)
+    return best_score
+
+def train_rl_hpsde_n_walks(max_fes):
+    params = get_model_parameters("rl-hpsde-n-wlaks-test", D, FUNC)
+    rl_hpsde = RL_HPSDE_N_WALKS(**params)
+    rl_hpsde.qlearning.load_qtable("qtable_own.txt")
     best_score = rl_hpsde.train(max_fes)
     return best_score
 
@@ -80,7 +88,7 @@ if __name__ == '__main__':
         max_fes = MAX_FES_10
 
     start = time.perf_counter()
-    scores = Parallel(n_jobs=N_JOBS)(delayed(train_rl_hpsde)(max_fes) for _ in range(N_RUNS))
+    scores = Parallel(n_jobs=N_JOBS)(delayed(train_l_shade)(max_fes) for _ in range(N_RUNS))
     end = time.perf_counter()
 
     scores = np.array(scores)

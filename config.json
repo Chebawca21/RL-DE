@@ -52,7 +52,7 @@
             "p":                     0.1,
             "archive_size":          null
         },
-        "rl-hpsde": {
+        "rl-hpsde-train": {
             "max_population_scalar": 18,
             "min_population_size":   4,
             "max_fes":               null,
@@ -62,7 +62,7 @@
             "p":                     0.1,
             "archive_size":          null
         },
-        "rl_hpsde_train": {
+        "rl-hpsde-test": {
             "max_population_scalar": 18,
             "min_population_size":   4,
             "max_fes":               null,
@@ -72,11 +72,23 @@
             "p":                     0.1,
             "archive_size":          null
         },
-        "rl_hpsde_test": {
+        "rl-hpsde-n-walks-train": {
             "max_population_scalar": 18,
             "min_population_size":   4,
             "max_fes":               null,
             "memory_size":           5,
+            "num_walks":             5,
+            "num_steps":             200,
+            "step_size":             10,
+            "p":                     0.1,
+            "archive_size":          null
+        },
+        "rl-hpsde-n-walks-test": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_walks":             5,
             "num_steps":             200,
             "step_size":             10,
             "p":                     0.1,

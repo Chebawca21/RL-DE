@@ -11,6 +11,7 @@ from models.l_shade import L_SHADE
 from models.l_shade_rsp import L_SHADE_RSP
 from models.qde import QDE
 from models.rl_hpsde import RL_HPSDE
+from models.rl_hpsde_n_walks import RL_HPSDE_N_WALKS
 from config import get_model_parameters, get_cec_funcs
 
 MAX_FES_10 = 200000
@@ -20,6 +21,7 @@ MIN_ERROR = 10 ** (-8)
 N_RUNS = 30
 
 TRAIN_FILE = "qtable.txt"
+TRAIN_FILE_N_WALKS = "qtable_n_walks.txt"
 
 N_JOBS = -1
 
@@ -43,18 +45,24 @@ def get_de(D, func, max_fes, model='de'):
         de = JADE(**params)
     elif model == 'shade':
         de = SHADE(**params)
-    elif model == 'l_shade':
+    elif model == 'l-shade':
         de = L_SHADE(**params)
-    elif model == 'l_shade_rsp':
+    elif model == 'l-shade-rsp':
         de = L_SHADE_RSP(**params)
     elif model == 'qde':
         de = QDE(**params)
-    elif model == 'rl_hpsde_train':
+    elif model == 'rl-hpsde-train':
         de = RL_HPSDE(**params)
         de.qlearning.load_qtable(TRAIN_FILE)
-    elif model == 'rl_hpsde_test':
+    elif model == 'rl-hpsde-test':
         de = RL_HPSDE(**params)
         de.qlearning.load_qtable(TRAIN_FILE)
+    elif model == 'rl-hpsde-n-walks-train':
+        de = RL_HPSDE_N_WALKS(**params)
+        de.qlearning.load_qtable(TRAIN_FILE_N_WALKS)
+    elif model == 'rl-hpsde-n-walks-test':
+        de = RL_HPSDE_N_WALKS(**params)
+        de.qlearning.load_qtable(TRAIN_FILE_N_WALKS)
     return de
 
 def single_run(D, func_name, func_num, run_id, model='de'):
@@ -88,8 +96,10 @@ def single_run(D, func_name, func_num, run_id, model='de'):
             break
         de.step()
 
-    if model == 'rl_hpsde_train':
+    if model == 'rl-hpsde-train':
         de.qlearning.save_qtable(TRAIN_FILE)
+    elif model == 'rl-hpsde-n-walks-train':
+        de.qlearning.save_qtable(TRAIN_FILE_N_WALKS)
     scores.append(de.func_evals)
     return scores
 
@@ -170,22 +180,30 @@ def train(Ds, funcs_names, model='de'):
 
     end_total = time.perf_counter()
     print(f"Finished for model {model}", "\n\n", f"Total time: {end_total - start_total} seconds")
-            
-if __name__ == '__main__':
-    # Ds = [10, 20]
-    # cec = "2021"
-    # funcs_names = get_cec_funcs(cec)
-    # for D in Ds:
-    #     for func_num, func_name in enumerate(funcs_names):
-    #         for run in range(N_RUNS):
-    #             start = time.perf_counter()
-    #             single_run(D, func_name, func_num, run, 'rl_hpsde_train') 
-    #             end = time.perf_counter()
-    #             print(f"Finished D={D} and func={func_name} in {end - start} seconds.")
 
-    Ds = [10]
+def train_with_rl(Ds, funcs_names, model):
+    for D in Ds:
+        for func_num, func_name in enumerate(funcs_names):
+            start = time.perf_counter()
+            for run in range(N_RUNS):
+                single_run(D, func_name, func_num, run, model) 
+            end = time.perf_counter()
+            print(f"Finished D={D} and func={func_name} in {end - start} seconds.")
+
+
+if __name__ == '__main__':
+    Ds = [10, 20]
+    cec = "2021"
+    funcs_names = get_cec_funcs(cec)
+    train_with_rl(Ds, funcs_names, 'rl-hpsde-train')
+    train_with_rl(Ds, funcs_names, 'rl-hpsde-n-walks-train')
+
+    Ds = [10, 20]
     cec = "2022"
     funcs_names = get_cec_funcs(cec)
-    funcs_names = funcs_names[:2]
-    train(Ds, funcs_names, 'de')
-    train(Ds, funcs_names, 'shade')
+    train(Ds, funcs_names, 'cde')
+    train(Ds, funcs_names, 'l-shade')
+    train(Ds, funcs_names, 'l-shade-rsp')
+    train(Ds, funcs_names, 'qde')
+    train(Ds, funcs_names, 'rl-hpsde-test')
+    train(Ds, funcs_names, 'rl-hpsde-n-walks-test')
