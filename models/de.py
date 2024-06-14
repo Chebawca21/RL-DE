@@ -36,7 +36,7 @@ class DifferentialEvolution:
             prs[i] = ranks[i] / ranks_sum
         return prs
 
-    def mutation(self, F, type='best', current=None, p=None, prs=None):
+    def mutation(self, F, type='best', Fw=1, current=None, p=None, prs=None):
         if type == 'rand':
             idxs = np.random.randint(0, self.population_size, 3)
             mutant = self.difference(self.population[idxs[0]], self.population[idxs[1]], self.population[idxs[2]], F)
@@ -83,12 +83,6 @@ class DifferentialEvolution:
                 random1 = self.population[idx1]
             p_best_idxs = self.scores.argsort()[:p]
             p_best = np.random.randint(0, len(p_best_idxs))
-            if self.func_evals < 0.2 * self.max_fes:
-                Fw = 0.7
-            elif self.func_evals < 0.4 * self.max_fes:
-                Fw = 0.8
-            else:
-                Fw = 1.2 * F
             mutant = self.difference(self.population[current], self.population[p_best_idxs[p_best]], self.population[current], Fw)
             mutant = self.difference(mutant, random0, random1, F)
         return mutant

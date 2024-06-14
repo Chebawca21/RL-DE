@@ -1,8 +1,8 @@
 import numpy as np
-from models.l_shade import L_SHADE
+from models.l_shade_rsp import L_SHADE_RSP
+from qlearning import QLearning
 
-
-class L_SHADE_RSP(L_SHADE):
+class RL_SHADE_RSP(L_SHADE_RSP):
     def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, mutation_type='current-to-pbest-r'):
         self.D = dimension
         self.func = func
@@ -17,29 +17,18 @@ class L_SHADE_RSP(L_SHADE):
         self.k = 0
         self.archive_size = self.population_size
         self.mutation_type = mutation_type
+        actions = [*range(1, 10)]
+        states = [*range(1, 5)]
+        self.qlearning = QLearning(states, actions, selection_strategy='boltzmann')
         self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf
         self.population = self.initializePopulation()
         self.archive = []
         self.evaluate_population()
+        self.state = self.get_state()
 
-    def generate_F(self):
-        F = -1
-        r = np.random.randint(0, self.memory_size + 1)
-        if r == self.memory_size:
-            mean = 0.9
-        else:
-            mean = self.memory_F[r]
-
-        while F <= 0:
-            F = np.random.standard_cauchy()
-            F = mean + (F * 0.1)
-        if F > 1:
-            F = 1
-        return F
-
-    def generate_cr(self):
+    def generate_cr(self, action):
         cr = -1
         r = np.random.randint(0, self.memory_size + 1)
         if r == self.memory_size:
@@ -52,11 +41,21 @@ class L_SHADE_RSP(L_SHADE):
         if cr > 1:
             cr = 1
 
-        if self.func_evals < 0.25 * self.max_fes:
+        if action % 3 == 0:
             cr = max(cr, 0.7)
-        elif self.func_evals < 0.5 * self.max_fes:
+        elif action % 3 == 1:
             cr = max(cr, 0.6)
         return cr
+
+    def get_state(self):
+        if self.func_evals < 0.25 * self.max_fes:
+            return 1
+        if self.func_evals < 0.5 * self.max_fes:
+            return 2
+        if self.func_evals < 0.75 * self.max_fes:
+            return 3
+        else:
+            return 4
 
     def step(self):
         new_population = np.zeros_like(self.population)
@@ -65,19 +64,19 @@ class L_SHADE_RSP(L_SHADE):
         diffs = []
         prs = self.get_rank_probabilities()
 
+        action = self.qlearning.get_action(self.state)
         for i in range(self.population_size):
             F = self.generate_F()
-            cr = self.generate_cr()
+            cr = self.generate_cr(action)
 
             p = max(2 , 0.085 + (0.085 * self.func_evals / self.max_fes))
 
-            if self.func_evals < 0.2 * self.max_fes:
+            if action < 4:
                 Fw = 0.7
-            elif self.func_evals < 0.4 * self.max_fes:
+            elif action < 7:
                 Fw = 0.8
             else:
                 Fw = 1.2 * F
-
             mutant = self.mutation(F, self.mutation_type, Fw=Fw, current=i, p=p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
@@ -100,6 +99,10 @@ class L_SHADE_RSP(L_SHADE):
             self.k += 1
             if self.k >= self.memory_size:
                 self.k = 0
+        reward = len(S_F) / self.population_size
+        next_state = self.get_state()
+        self.qlearning.update_qtable(self.state, next_state, action, reward)
+        self.state = next_state
         self.population_size, self.population, self.scores = self.adjust_population_size(new_population, new_scores)
         self.archive_size = self.population_size
         self.resize_archive()

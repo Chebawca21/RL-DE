@@ -11,6 +11,7 @@ from models.l_shade_rsp import L_SHADE_RSP
 from models.qde import QDE
 from models.rl_hpsde import RL_HPSDE
 from models.rl_hpsde_n_walks import RL_HPSDE_N_WALKS
+from models.rl_shade_rsp import RL_SHADE_RSP
 from config import get_model_parameters
 
 MAX_FES_10 = 200000
@@ -76,6 +77,12 @@ def train_rl_hpsde_n_walks(max_fes):
     rl_hpsde = RL_HPSDE_N_WALKS(**params)
     rl_hpsde.qlearning.load_qtable("qtable_own.txt")
     best_score = rl_hpsde.train(max_fes)
+    return best_score
+
+def train_rl_shade_rsp(max_fes):
+    params = get_model_parameters("rl-shade-rsp", D, FUNC)
+    rl_shade_rsp = RL_SHADE_RSP(**params)
+    best_score = rl_shade_rsp.train(max_fes)
     return best_score
 
 
