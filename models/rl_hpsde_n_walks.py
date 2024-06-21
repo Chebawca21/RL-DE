@@ -3,7 +3,7 @@ from models.rl_hpsde import RL_HPSDE
 from qlearning import QLearning
 
 class RL_HPSDE_N_WALKS(RL_HPSDE):
-    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, num_walks=5, num_steps=200, step_size=10, p=0.1, archive_size=None):
+    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, num_walks=5, num_steps=200, step_size=10, p=0.1, selection_strategy='boltzmann', archive_size=None):
         self.D = dimension
         self.func = func
         self.population_size =  max_population_scalar * self.D
@@ -30,7 +30,7 @@ class RL_HPSDE_N_WALKS(RL_HPSDE):
             self.f_walks.append(f)
         actions = [*range(1, 5)]
         states = [*range(1, 5)]
-        self.qlearning = QLearning(states, actions, selection_strategy='boltzmann')
+        self.qlearning = QLearning(states, actions, selection_strategy=selection_strategy)
         self.p = int(p * self.population_size)
         if archive_size is None:
             self.archive_size = self.population_size

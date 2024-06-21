@@ -3,7 +3,7 @@ from models.l_shade_rsp import L_SHADE_RSP
 from qlearning import QLearning
 
 class RL_SHADE_RSP(L_SHADE_RSP):
-    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, mutation_type='current-to-pbest-r'):
+    def __init__(self, dimension, func, max_population_scalar, min_population_size, max_fes, memory_size, mutation_type='current-to-pbest-r', selection_strategy='boltzmann',):
         self.D = dimension
         self.func = func
         self.population_size = int(max_population_scalar * pow(self.D, 2 / 3))
@@ -19,7 +19,7 @@ class RL_SHADE_RSP(L_SHADE_RSP):
         self.mutation_type = mutation_type
         actions = [*range(1, 10)]
         states = [*range(1, 5)]
-        self.qlearning = QLearning(states, actions, selection_strategy='boltzmann')
+        self.qlearning = QLearning(states, actions, selection_strategy=selection_strategy)
         self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf

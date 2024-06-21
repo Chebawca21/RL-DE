@@ -27,6 +27,11 @@ class QLearning:
                 action_indexes = action_indexes.flatten()
                 i = np.random.randint(len(action_indexes))
                 action_index = action_indexes[i]
+        if self.selection_strategy == 'greedy':
+            action_indexes = np.argwhere(self.qtable[state_index] == np.max(self.qtable[state_index]))
+            action_indexes = action_indexes.flatten()
+            i = np.random.randint(len(action_indexes))
+            action_index = action_indexes[i]
         if self.selection_strategy == 'boltzmann':
             max_Q = np.max(self.qtable)
             if max_Q == 0:

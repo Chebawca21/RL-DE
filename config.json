@@ -60,6 +60,7 @@
             "num_steps":             200,
             "step_size":             10,
             "p":                     0.1,
+            "selection_strategy":    "boltzmann",
             "archive_size":          null
         },
         "rl-hpsde-test": {
@@ -70,6 +71,7 @@
             "num_steps":             200,
             "step_size":             10,
             "p":                     0.1,
+            "selection_strategy":    "boltzmann",
             "archive_size":          null
         },
         "rl-hpsde-n-walks-train": {
@@ -81,6 +83,7 @@
             "num_steps":             200,
             "step_size":             10,
             "p":                     0.1,
+            "selection_strategy":    "boltzmann",
             "archive_size":          null
         },
         "rl-hpsde-n-walks-test": {
@@ -92,6 +95,7 @@
             "num_steps":             200,
             "step_size":             10,
             "p":                     0.1,
+            "selection_strategy":    "greedy",
             "archive_size":          null
         },
         "rl-shade-rsp": {
@@ -99,21 +103,24 @@
             "min_population_size":   4,
             "max_fes":               null,
             "memory_size":           5,
-            "mutation_type":         "current-to-pbest-r"
+            "mutation_type":         "current-to-pbest-r",
+            "selection_strategy":    "boltzmann"
         },
         "rl-shade-rsp-train": {
             "max_population_scalar": 75,
             "min_population_size":   4,
             "max_fes":               null,
             "memory_size":           5,
-            "mutation_type":         "current-to-pbest-r"
+            "mutation_type":         "current-to-pbest-r",
+            "selection_strategy":    "boltzmann"
         },
         "rl-shade-rsp-test": {
             "max_population_scalar": 75,
             "min_population_size":   4,
             "max_fes":               null,
             "memory_size":           5,
-            "mutation_type":         "current-to-pbest-r"
+            "mutation_type":         "current-to-pbest-r",
+            "selection_strategy":    "greedy"
         }
     },
     "max_fes": {
