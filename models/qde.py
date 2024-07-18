@@ -14,7 +14,7 @@ class QDE(DifferentialEvolution):
         actions = list(product(self.F_pool, self.cr_pool))
         states = [0]
         self.state = 0
-        self.qlearning = QLearning(states, actions)
+        self.qlearning = QLearning(states, actions, selection_strategy='greedy')
         self.mutation_type = mutation_type
         self.p = int(p * population_size)
         if archive_size is None:

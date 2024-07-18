@@ -52,6 +52,29 @@
             "p":                     0.1,
             "archive_size":          null
         },
+        "qde-train": {
+            "population_size":       50,
+            "mutation_type":         "best",
+            "p":                     0.1,
+            "archive_size":          null
+        },
+        "qde-test": {
+            "population_size":       50,
+            "mutation_type":         "best",
+            "p":                     0.1,
+            "archive_size":          null
+        },
+        "rl-hpsde": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_steps":             200,
+            "step_size":             10,
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "archive_size":          null
+        },
         "rl-hpsde-train": {
             "max_population_scalar": 18,
             "min_population_size":   4,
@@ -70,6 +93,18 @@
             "memory_size":           5,
             "num_steps":             200,
             "step_size":             10,
+            "p":                     0.1,
+            "selection_strategy":    "greedy",
+            "archive_size":          null
+        },
+        "rl-hpsde-n-walks": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_walks":             5,
+            "num_steps":             200,
+            "step_size":             5,
             "p":                     0.1,
             "selection_strategy":    "boltzmann",
             "archive_size":          null
@@ -95,7 +130,7 @@
             "num_steps":             200,
             "step_size":             10,
             "p":                     0.1,
-            "selection_strategy":    "greedy",
+            "selection_strategy":    "boltzmann",
             "archive_size":          null
         },
         "rl-shade-rsp": {
@@ -120,7 +155,7 @@
             "max_fes":               null,
             "memory_size":           5,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "greedy"
+            "selection_strategy":    "boltzmann"
         }
     },
     "max_fes": {
@@ -155,6 +190,18 @@
             "F82021",
             "F92021",
             "F102021"
+        ],
+        "2020": [
+            "F12020",
+            "F22020",
+            "F32020",
+            "F42020",
+            "F52020",
+            "F62020",
+            "F72020",
+            "F82020",
+            "F92020",
+            "F102020"
         ]
     }
 }
