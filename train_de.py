@@ -19,8 +19,9 @@ MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
 MAX_FES_OTHER = 10000
 MIN_ERROR = 10 ** (-8)
-N_RUNS = 30
+N_RUNS = 60
 
+TRAIN_FILE_QDE = "qtable_qde.txt"
 TRAIN_FILE = "qtable.txt"
 TRAIN_FILE_N_WALKS = "qtable_n_walks.txt"
 TRAIN_FILE_RL_SHADE_RSP = "qtable_rl_shade_rsp.txt"
@@ -53,12 +54,22 @@ def get_de(D, func, max_fes, model='de'):
         de = L_SHADE_RSP(**params)
     elif model == 'qde':
         de = QDE(**params)
+    elif model == 'qde-train':
+        de = QDE(**params)
+        de.qlearning.load_qtable(TRAIN_FILE_QDE)
+    elif model == 'qde-test':
+        de = QDE(**params)
+        de.qlearning.load_qtable(TRAIN_FILE_QDE)
+    elif model == 'rl-hpsde':
+        de = RL_HPSDE(**params)
     elif model == 'rl-hpsde-train':
         de = RL_HPSDE(**params)
         de.qlearning.load_qtable(TRAIN_FILE)
     elif model == 'rl-hpsde-test':
         de = RL_HPSDE(**params)
         de.qlearning.load_qtable(TRAIN_FILE)
+    elif model == 'rl-hpsde-n-walks':
+        de = RL_HPSDE_N_WALKS(**params)
     elif model == 'rl-hpsde-n-walks-train':
         de = RL_HPSDE_N_WALKS(**params)
         de.qlearning.load_qtable(TRAIN_FILE_N_WALKS)
@@ -112,6 +123,8 @@ def single_run(D, func_name, func_num, run_id, model='de'):
         de.qlearning.save_qtable(TRAIN_FILE_N_WALKS)
     elif model == 'rl-shade-rsp-train':
         de.qlearning.save_qtable(TRAIN_FILE_RL_SHADE_RSP)
+    elif model == 'qde-train':
+        de.qlearning.save_qtable(TRAIN_FILE_QDE)
     scores.append(de.func_evals)
     return scores
 
@@ -207,10 +220,16 @@ if __name__ == '__main__':
     Ds = [10, 20]
     cec = "2021"
     funcs_names = get_cec_funcs(cec)
+    train_with_rl(Ds, funcs_names, 'rl-hpsde-n-walks-train')
     train_with_rl(Ds, funcs_names, 'rl-shade-rsp-train')
+    train_with_rl(Ds, funcs_names, 'rl-hpsde-train')
+    train_with_rl(Ds, funcs_names, 'qde-train')
 
+    N_RUNS = 30
     Ds = [10, 20]
     cec = "2022"
     funcs_names = get_cec_funcs(cec)
-    train(Ds, funcs_names, 'rl-shade-rsp')
+    train(Ds, funcs_names, 'rl-hpsde-n-walks-test')
+    train(Ds, funcs_names, 'rl-hpsde-test')
     train(Ds, funcs_names, 'rl-shade-rsp-test')
+    train(Ds, funcs_names, 'qde-test')
