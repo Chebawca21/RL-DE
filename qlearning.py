@@ -14,7 +14,10 @@ class QLearning:
         self.qtable = self.initialize_qtable()
 
     def initialize_qtable(self):
-        return np.zeros((self.n_states, self.n_actions))
+        if self.n_states > 1:
+            return np.zeros((self.n_states, self.n_actions))
+        else:
+            return np.zeros(self.n_actions).reshape((1, self.n_actions))
 
     def get_action(self, state):
         state_index = self.states.index(state)
@@ -56,6 +59,9 @@ class QLearning:
 
     def load_qtable(self, file_name):
         self.qtable = np.loadtxt(file_name)
+        if self.n_states == 1:
+            self.qtable = self.qtable.reshape((1, self.n_actions))
+
 
     def save_qtable(self, file_name):
         np.savetxt(file_name, self.qtable)
