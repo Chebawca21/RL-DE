@@ -46,7 +46,7 @@ class DrawDE():
     def stop(self):
         plt.ioff()
 
-    def train(self):
+    def evolve(self):
         for i in range(int(self.max_fes / self.de.population_size)):
             if self.de.func_evals + self.de.population_size > self.max_fes:
                 break
@@ -57,4 +57,4 @@ class DrawDE():
 
 
 draw_de = DrawDE(10, 50, 0.8, 0.8, -100, 100, 2, 10000, 50)
-draw_de.train()
+draw_de.evolve()

@@ -24,65 +24,65 @@ FUNC = 'F32022'
 N_JOBS = -1
 
 
-def train_de(max_fes):
+def evolve_de(max_fes):
     params = get_model_parameters("de", D, FUNC)
     de = DifferentialEvolution(**params)
-    best_score = de.train(max_fes)
+    best_score = de.evolve(max_fes)
     return best_score
 
-def train_cde(max_fes):
+def evolve_cde(max_fes):
     params = get_model_parameters("cde", D, FUNC)
     cde = CDE(**params)
-    best_score = cde.train(max_fes)
+    best_score = cde.evolve(max_fes)
     return best_score
 
-def train_jade(max_fes):
+def evolve_jade(max_fes):
     params = get_model_parameters("jade", D, FUNC)
     jade = JADE(**params)
-    best_score = jade.train(max_fes)
+    best_score = jade.evolve(max_fes)
     return best_score
 
-def train_shade(max_fes):
+def evolve_shade(max_fes):
     params = get_model_parameters("shade", D, FUNC)
     shade = SHADE(**params)
-    best_score = shade.train(max_fes)
+    best_score = shade.evolve(max_fes)
     return best_score
 
-def train_l_shade(max_fes):
+def evolve_l_shade(max_fes):
     params = get_model_parameters("l-shade", D, FUNC)
     l_shade = L_SHADE(**params)
-    best_score = l_shade.train(max_fes)
+    best_score = l_shade.evolve(max_fes)
     return best_score
 
-def train_l_shade_rsp(max_fes):
+def evolve_l_shade_rsp(max_fes):
     params = get_model_parameters("l-shade-rsp", D, FUNC)
     l_shade_rsp = L_SHADE_RSP(**params)
-    best_score = l_shade_rsp.train(max_fes)
+    best_score = l_shade_rsp.evolve(max_fes)
     return best_score
 
-def train_qde(max_fes):
+def evolve_qde(max_fes):
     params = get_model_parameters("qde", D, FUNC)
     qde = QDE(**params)
-    best_score = qde.train(max_fes)
+    best_score = qde.evolve(max_fes)
     return best_score
 
-def train_rl_hpsde(max_fes):
+def evolve_rl_hpsde(max_fes):
     params = get_model_parameters("rl-hpsde-test", D, FUNC)
     rl_hpsde = RL_HPSDE(**params)
-    best_score = rl_hpsde.train(max_fes)
+    best_score = rl_hpsde.evolve(max_fes)
     return best_score
 
-def train_rl_hpsde_n_walks(max_fes):
+def evolve_rl_hpsde_n_walks(max_fes):
     params = get_model_parameters("rl-hpsde-n-wlaks-test", D, FUNC)
     rl_hpsde = RL_HPSDE_N_WALKS(**params)
     rl_hpsde.qlearning.load_qtable("qtable_own.txt")
-    best_score = rl_hpsde.train(max_fes)
+    best_score = rl_hpsde.evolve(max_fes)
     return best_score
 
-def train_rl_shade_rsp(max_fes):
+def evolve_rl_shade_rsp(max_fes):
     params = get_model_parameters("rl-shade-rsp", D, FUNC)
     rl_shade_rsp = RL_SHADE_RSP(**params)
-    best_score = rl_shade_rsp.train(max_fes)
+    best_score = rl_shade_rsp.evolve(max_fes)
     return best_score
 
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         max_fes = MAX_FES_10
 
     start = time.perf_counter()
-    scores = Parallel(n_jobs=N_JOBS)(delayed(train_l_shade)(max_fes) for _ in range(N_RUNS))
+    scores = Parallel(n_jobs=N_JOBS)(delayed(evolve_l_shade)(max_fes) for _ in range(N_RUNS))
     end = time.perf_counter()
 
     scores = np.array(scores)

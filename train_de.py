@@ -128,7 +128,7 @@ def single_run(D, func_name, func_num, run_id, model='de'):
     scores.append(de.func_evals)
     return scores
 
-def train(Ds, funcs_names, model='de'):
+def evolve(Ds, funcs_names, model='de'):
     model_path = f"out/{model}"
     Path(model_path).mkdir(parents=True, exist_ok=True)
     start_total = time.perf_counter()
@@ -194,7 +194,7 @@ def train(Ds, funcs_names, model='de'):
         for _ in range(5):
             de = get_de(D, funcs_names[0], 200000, model)
             start_t2 = time.perf_counter()
-            de.train(200000)
+            de.evolve(200000)
             end_t2 = time.perf_counter()
             t2s.append(end_t2 - start_t2)
         t2 = np.mean(t2s)
@@ -229,7 +229,7 @@ if __name__ == '__main__':
     Ds = [10, 20]
     cec = "2022"
     funcs_names = get_cec_funcs(cec)
-    train(Ds, funcs_names, 'rl-hpsde-n-walks-test')
-    train(Ds, funcs_names, 'rl-hpsde-test')
-    train(Ds, funcs_names, 'rl-shade-rsp-test')
-    train(Ds, funcs_names, 'qde-test')
+    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test')
+    evolve(Ds, funcs_names, 'rl-hpsde-test')
+    evolve(Ds, funcs_names, 'rl-shade-rsp-test')
+    evolve(Ds, funcs_names, 'qde-test')
