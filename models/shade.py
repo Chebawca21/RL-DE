@@ -32,11 +32,11 @@ class SHADE(JADE):
         return F
 
     def generate_cr(self):
-        cr = -1
         r = np.random.randint(0, self.memory_size)
-        while cr <= 0:
-            cr = np.random.normal(self.memory_cr[r], 0.1)
-        if cr > 1:
+        cr = np.random.normal(self.memory_cr[r], 0.1)
+        if cr < 0:
+            cr = 0
+        elif cr > 1:
             cr = 1
         return cr
 

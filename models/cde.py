@@ -38,6 +38,7 @@ class CDE(DifferentialEvolution):
             probability = (self.strat_succ[i] + self.strat_constant) / (strat_sum + self.n_strategies * self.strat_constant)
             if probability < self.delta:
                 self.probabilities = np.full(self.n_strategies, 1/self.D)
+                self.strat_succ = np.zeros(self.n_strategies)
                 break
             else:
                 self.probabilities[i] = probability

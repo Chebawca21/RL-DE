@@ -31,10 +31,10 @@ class JADE(DifferentialEvolution):
         return F
 
     def generate_cr(self):
-        cr = -1
-        while cr <= 0:
-            cr = np.random.normal(self.mean_cr, 0.1)
-        if cr > 1:
+        cr = np.random.normal(self.mean_cr, 0.1)
+        if cr < 0:
+            cr = 0
+        elif cr > 1:
             cr = 1
         return cr
 
