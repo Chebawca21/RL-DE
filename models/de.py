@@ -173,7 +173,7 @@ class DifferentialEvolution:
     def next_func_evals(self):
         return self.func_evals + self.population_size
 
-    def train(self, max_fes):
+    def evolve(self, max_fes):
         while self.func_evals <= max_fes:
             if self.next_func_evals() > max_fes:
                 break
