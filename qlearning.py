@@ -2,7 +2,7 @@ import numpy as np
 
 
 class QLearning:
-    def __init__(self, states, actions, learning_rate=0.8, discount_factor=0.5, selection_strategy='epsilon-greedy',  epsilon=0.9):
+    def __init__(self, states, actions, learning_rate=0.8, discount_factor=0.5, selection_strategy='epsilon-greedy',  epsilon=0.1):
         self.states = states
         self.actions = actions
         self.lr = learning_rate
@@ -23,7 +23,7 @@ class QLearning:
         state_index = self.states.index(state)
         if self.selection_strategy == 'epsilon-greedy':
             r = np.random.rand()
-            if r > self.epsilon:
+            if r < self.epsilon:
                 action_index = np.random.randint(self.n_actions)
             else:
                 action_indexes = np.argwhere(self.qtable[state_index] == np.max(self.qtable[state_index]))
