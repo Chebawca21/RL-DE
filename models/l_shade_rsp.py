@@ -37,6 +37,9 @@ class L_SHADE_RSP(L_SHADE):
             F = mean + (F * 0.1)
         if F > 1:
             F = 1
+        
+        if self.func_evals < 0.6 * self.max_fes:
+            F = min(F, 0.7)
         return F
 
     def generate_cr(self):
@@ -47,8 +50,9 @@ class L_SHADE_RSP(L_SHADE):
         else:
             mean = self.memory_cr[r]
 
-        while cr <= 0:
-            cr = np.random.normal(mean, 0.1)
+        cr = np.random.normal(mean, 0.1)
+        if cr < 0:
+            cr = 0
         if cr > 1:
             cr = 1
 
