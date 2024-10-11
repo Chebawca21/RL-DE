@@ -4,7 +4,7 @@ from models.de import DifferentialEvolution
 from qlearning import QLearning
 
 class QDE(DifferentialEvolution):
-    def __init__(self, dimension, func, population_size, mutation_type='best', p=0.1, archive_size=None):
+    def __init__(self, dimension, func, population_size, mutation_type='rand', p=0.1, selection_strategy='epsilon-greedy', archive_size=None):
         self.D = dimension
         self.func = func
         self.population_size = population_size
@@ -12,9 +12,10 @@ class QDE(DifferentialEvolution):
         self.F_pool = [0.5, 0.8, 1.0]
         self.cr_pool = [0.0, 0.5, 1.0]
         actions = list(product(self.F_pool, self.cr_pool))
+        # actions = [(0.4, 0.7), (0.6, 0.7), (0.8, 0.7), (0.4, 0.9), (0.6, 0.9), (0.8, 0.9), (0.9, 0.9)]
         states = [0]
         self.state = 0
-        self.qlearning = QLearning(states, actions, selection_strategy='greedy')
+        self.qlearning = QLearning(states, actions, selection_strategy=selection_strategy)
         self.mutation_type = mutation_type
         self.p = int(p * population_size)
         if archive_size is None:
@@ -44,7 +45,7 @@ class QDE(DifferentialEvolution):
                 new_scores[i] = candidate_score
                 self.archive.append(self.population[i])
             else:
-                self.qlearning.update_qtable(self.state, self.state, (F, cr), -0.5)
+                self.qlearning.update_qtable(self.state, self.state, (F, cr), 0)
                 new_population[i] = self.population[i]
                 new_scores[i] = self.scores[i]
 

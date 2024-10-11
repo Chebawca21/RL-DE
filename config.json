@@ -13,7 +13,7 @@
             "population_size":       50,
             "strat_constant":        2,
             "inverse_delta":         45,
-            "mutation_type":         "randrl",
+            "mutation_type":         "rand",
             "p":                     0.1,
             "archive_size":          null
         },
@@ -48,20 +48,23 @@
         },
         "qde": {
             "population_size":       50,
-            "mutation_type":         "best",
+            "mutation_type":         "rand",
             "p":                     0.1,
+            "selection_strategy":    "boltzmann",
             "archive_size":          null
         },
         "qde-train": {
             "population_size":       50,
-            "mutation_type":         "best",
+            "mutation_type":         "rand",
             "p":                     0.1,
+            "selection_strategy":    "boltzmann",
             "archive_size":          null
         },
         "qde-test": {
             "population_size":       50,
-            "mutation_type":         "best",
+            "mutation_type":         "rand",
             "p":                     0.1,
+            "selection_strategy":    "greedy",
             "archive_size":          null
         },
         "rl-hpsde": {

@@ -4,7 +4,7 @@ from models.de import DifferentialEvolution
 
 
 class CDE(DifferentialEvolution):
-    def __init__(self, dimension, func, population_size, strat_constant, inverse_delta, mutation_type='randrl', p=0.1, archive_size=None):
+    def __init__(self, dimension, func, population_size, strat_constant, inverse_delta, mutation_type='rand', p=0.1, archive_size=None):
         self.D = dimension
         self.func = func
         self.population_size = population_size
