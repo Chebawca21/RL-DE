@@ -66,6 +66,23 @@ class RL_HPSDE(DifferentialEvolution):
                     walk[s][i] = x_min + (x_min - walk[s][i])
                     starting_zone[i] = 1 - starting_zone[i]
         return walk
+    
+    def random_walk(self):
+        x_min = -100
+        x_max = 100
+        walk = np.zeros((self.num_steps, self.D))
+        for i in range(self.D):
+            r = np.random.uniform(x_min, x_max)
+            walk[0][i] = r
+        for s in range(self.num_steps):
+            for i in range(self.D):
+                r = np.random.uniform(-self.step_size, self.step_size)
+                walk[s][i] = walk[s - 1][i] + r
+                if walk[s][i] > x_max:
+                    walk[s][i] = x_max - (walk[s][i] - x_max)
+                elif walk[s][i] < x_min:
+                    walk[s][i] = x_min + (x_min - walk[s][i])
+        return walk
 
     def draw_walk(self, walk):
         x = walk[:, 0]
