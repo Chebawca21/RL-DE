@@ -47,13 +47,6 @@ def f5_evaluate(self, x, *args):
     z = np.dot(self.f_matrix, x - self.f_shift)
     return operator.levy_func(z, shift=1.0) + self.f_bias
 
-def levy_func(x, shift=0.0):
-    x = np.array(x).ravel() + shift
-    w = 1. + (x - 1.) / 4
-    t1 = np.sin(np.pi * w[0]) ** 2 + (w[-1] - 1) ** 2 * (1 + np.sin(2 * np.pi * w[-1]) ** 2)
-    t2 = np.sum((w[:-1] - 1) ** 2 * (1 + 10 * np.sin(np.pi * w[:-1] + 1) ** 2))
-    return t1 + t2
-
 # F6
 def f6_evaluate(self, x, *args):
     self.n_fe += 1
@@ -161,7 +154,7 @@ def grie_rosen_cec_func(x):
 
 # F9
 def f9_evaluate(self, x, *args):
-    self. lamdas = [1, 1e-6, 1e-26, 1e-6, 1e-6]
+    self.lamdas = [1, 1e-6, 1e-26, 1e-6, 1e-6]
 
     self.n_fe += 1
     self.check_solution(x, self.dim_max, self.dim_supported)
@@ -322,7 +315,6 @@ def adjust_cec_functions():
 
     # F5
     opfunu.cec_based.cec2022.F52022.evaluate = f5_evaluate
-    opfunu.utils.operator.levy_func = levy_func
 
     # F6
     opfunu.cec_based.cec2022.F62022.evaluate = f6_evaluate
