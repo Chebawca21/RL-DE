@@ -52,7 +52,7 @@ def get_de(D, func, max_fes, model='de'):
         de = L_SHADE(**params)
     elif model == 'l-shade-rsp':
         de = L_SHADE_RSP(**params)
-    elif model == 'qde':
+    elif model == 'qde' or model == 'qde-epsilon-greedy' or model == 'qde-actions-qlde':
         de = QDE(**params)
     elif model == 'qde-train':
         de = QDE(**params)
@@ -217,19 +217,17 @@ def train_with_rl(Ds, funcs_names, model):
 
 
 if __name__ == '__main__':
-    Ds = [10, 20]
-    cec = "2021"
-    funcs_names = get_cec_funcs(cec)
-    train_with_rl(Ds, funcs_names, 'rl-hpsde-n-walks-train')
-    train_with_rl(Ds, funcs_names, 'rl-shade-rsp-train')
-    train_with_rl(Ds, funcs_names, 'rl-hpsde-train')
-    train_with_rl(Ds, funcs_names, 'qde-train')
+    # Ds = [10, 20]
+    # cec = "2021"
+    # funcs_names = get_cec_funcs(cec)
+    # train_with_rl(Ds, funcs_names, 'rl-hpsde-n-walks-train')
+    # train_with_rl(Ds, funcs_names, 'rl-shade-rsp-train')
+    # train_with_rl(Ds, funcs_names, 'rl-hpsde-train')
+    # train_with_rl(Ds, funcs_names, 'qde-train')
 
     N_RUNS = 30
     Ds = [10, 20]
     cec = "2022"
     funcs_names = get_cec_funcs(cec)
-    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test')
-    evolve(Ds, funcs_names, 'rl-hpsde-test')
-    evolve(Ds, funcs_names, 'rl-shade-rsp-test')
-    evolve(Ds, funcs_names, 'qde-test')
+    evolve(Ds, funcs_names, 'qde-epsilon-greedy')
+    evolve(Ds, funcs_names, 'qde-actions-qlde')

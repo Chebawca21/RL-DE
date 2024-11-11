@@ -51,6 +51,23 @@
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "archive_size":          null
+        },
+        "qde-epsilon-greedy": {
+            "population_size":       50,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "epsilon-greedy",
+            "actions":               "cde",
+            "archive_size":          null
+        },
+        "qde-actions-qlde": {
+            "population_size":       50,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "qlde",
             "archive_size":          null
         },
         "qde-train": {
@@ -58,6 +75,7 @@
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "boltzmann",
+            "actions":               "cde",
             "archive_size":          null
         },
         "qde-test": {
@@ -65,6 +83,7 @@
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "greedy",
+            "actions":               "cde",
             "archive_size":          null
         },
         "rl-hpsde": {

@@ -4,15 +4,17 @@ from models.de import DifferentialEvolution
 from qlearning import QLearning
 
 class QDE(DifferentialEvolution):
-    def __init__(self, dimension, func, population_size, mutation_type='rand', p=0.1, selection_strategy='epsilon-greedy', archive_size=None):
+    def __init__(self, dimension, func, population_size, mutation_type='rand', p=0.1, selection_strategy='boltzmann', actions='cde', archive_size=None):
         self.D = dimension
         self.func = func
         self.population_size = population_size
         self.rank_greediness_factor = 3
-        self.F_pool = [0.5, 0.8, 1.0]
-        self.cr_pool = [0.0, 0.5, 1.0]
-        actions = list(product(self.F_pool, self.cr_pool))
-        # actions = [(0.4, 0.7), (0.6, 0.7), (0.8, 0.7), (0.4, 0.9), (0.6, 0.9), (0.8, 0.9), (0.9, 0.9)]
+        if actions == 'qlde':
+            actions = [(0.4, 0.7), (0.6, 0.7), (0.8, 0.7), (0.4, 0.9), (0.6, 0.9), (0.8, 0.9), (0.9, 0.9)]
+        else:
+            self.F_pool = [0.5, 0.8, 1.0]
+            self.cr_pool = [0.0, 0.5, 1.0]
+            actions = list(product(self.F_pool, self.cr_pool))
         states = [0]
         self.state = 0
         self.qlearning = QLearning(states, actions, selection_strategy=selection_strategy)
