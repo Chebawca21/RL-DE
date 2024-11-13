@@ -68,7 +68,7 @@ def get_de(D, func, max_fes, model='de'):
     elif model == 'rl-hpsde-test':
         de = RL_HPSDE(**params)
         de.qlearning.load_qtable(TRAIN_FILE)
-    elif model == 'rl-hpsde-n-walks':
+    elif model == 'rl-hpsde-n-walks' or model == 'rl-hpsde-n-walks-scalar-1' or model == 'rl-hpsde-n-walks-scalar-2' or model == 'rl-hpsde-n-walks-scalar-5':
         de = RL_HPSDE_N_WALKS(**params)
     elif model == 'rl-hpsde-n-walks-train':
         de = RL_HPSDE_N_WALKS(**params)
@@ -229,5 +229,7 @@ if __name__ == '__main__':
     Ds = [10, 20]
     cec = "2022"
     funcs_names = get_cec_funcs(cec)
-    evolve(Ds, funcs_names, 'qde-epsilon-greedy')
-    evolve(Ds, funcs_names, 'qde-actions-qlde')
+    evolve(Ds, funcs_names, 'rl-hpsde-n-walks')
+    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-1')
+    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-2')
+    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-5')

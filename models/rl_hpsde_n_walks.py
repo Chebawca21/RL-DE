@@ -15,7 +15,7 @@ class RL_HPSDE_N_WALKS(RL_HPSDE):
         self.memory_F = np.full((self.memory_size, 1), 0.5)
         self.memory_cr = np.full((self.memory_size, 1), 0.5)
         self.k = 0
-        self.num_walks = num_walks_scalar * self.D
+        self.num_walks = int(num_walks_scalar * self.D)
         self.num_steps = num_steps
         self.step_size = step_size
         self.walks = []
