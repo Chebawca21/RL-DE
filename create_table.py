@@ -42,8 +42,8 @@ def comparisons_to_latex(comparisons, bold_best=False):
     return text
 
 if __name__ == '__main__':
-    models = ["rl-shade-interval-02", "rl-shade", "rl-shade-interval-005"]
-    column = "Mean"
+    models = ["rl-shade-test", "rl-shade-test-boltzmann"]
+    column = "Median"
 
     comp_10 = make_comparison(models, 10, column)
     comp_20 = make_comparison(models, 20, column)
