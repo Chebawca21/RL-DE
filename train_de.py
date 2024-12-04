@@ -13,18 +13,14 @@ from models.qde import QDE
 from models.rl_hpsde import RL_HPSDE
 from models.rl_hpsde_n_walks import RL_HPSDE_N_WALKS
 from models.rl_shade_rsp import RL_SHADE_RSP
+from models.rl_shade import RL_SHADE
 from config import get_model_parameters, get_cec_funcs
 
 MAX_FES_10 = 200000
 MAX_FES_20 = 1000000
 MAX_FES_OTHER = 10000
 MIN_ERROR = 10 ** (-8)
-N_RUNS = 60
-
-TRAIN_FILE_QDE = "qtable_qde.txt"
-TRAIN_FILE = "qtable.txt"
-TRAIN_FILE_N_WALKS = "qtable_n_walks.txt"
-TRAIN_FILE_RL_SHADE_RSP = "qtable_rl_shade_rsp.txt"
+N_RUNS = 30
 
 N_JOBS = -1
 
@@ -38,7 +34,7 @@ def get_seed(problem_size, func_num, runs, run_id):
 def count_fes(D, k, max_fes):
     return D ** (k/5 - 3) * max_fes
 
-def get_de(D, func, max_fes, model='de'):
+def get_de(D, func, max_fes, model='de', qtable_path=""):
     params = get_model_parameters(model, D, func)
     if model == 'de':
         de = DifferentialEvolution(**params)
@@ -52,41 +48,22 @@ def get_de(D, func, max_fes, model='de'):
         de = L_SHADE(**params)
     elif model == 'l-shade-rsp':
         de = L_SHADE_RSP(**params)
-    elif model == 'qde' or model == 'qde-epsilon-greedy' or model == 'qde-actions-qlde':
+    elif model == 'qde' or model == 'qde-train' or model == 'qde-test' or model == 'qde-test-greedy' or model == 'qde-epsilon-greedy' or model == 'qde-actions-qlde':
         de = QDE(**params)
-    elif model == 'qde-train':
-        de = QDE(**params)
-        de.qlearning.load_qtable(TRAIN_FILE_QDE)
-    elif model == 'qde-test':
-        de = QDE(**params)
-        de.qlearning.load_qtable(TRAIN_FILE_QDE)
-    elif model == 'rl-hpsde':
+    elif model == 'rl-hpsde' or model == 'rl-hpsde-train' or model == 'rl-hpsde-test' or model == 'rl-hpsde-test-boltzmann':
         de = RL_HPSDE(**params)
-    elif model == 'rl-hpsde-train':
-        de = RL_HPSDE(**params)
-        de.qlearning.load_qtable(TRAIN_FILE)
-    elif model == 'rl-hpsde-test':
-        de = RL_HPSDE(**params)
-        de.qlearning.load_qtable(TRAIN_FILE)
-    elif model == 'rl-hpsde-n-walks' or model == 'rl-hpsde-n-walks-scalar-1' or model == 'rl-hpsde-n-walks-scalar-2' or model == 'rl-hpsde-n-walks-scalar-5':
+    elif model == 'rl-hpsde-n-walks' or model == 'rl-hpsde-n-walks-train' or model == 'rl-hpsde-n-walks-test' or model == 'rl-hpsde-n-walks-test-boltzmann' or model == 'rl-hpsde-n-walks-scalar-1' or model == 'rl-hpsde-n-walks-scalar-2' or model == 'rl-hpsde-n-walks-scalar-5':
         de = RL_HPSDE_N_WALKS(**params)
-    elif model == 'rl-hpsde-n-walks-train':
-        de = RL_HPSDE_N_WALKS(**params)
-        de.qlearning.load_qtable(TRAIN_FILE_N_WALKS)
-    elif model == 'rl-hpsde-n-walks-test':
-        de = RL_HPSDE_N_WALKS(**params)
-        de.qlearning.load_qtable(TRAIN_FILE_N_WALKS)
-    elif model == 'rl-shade-rsp':
+    elif model == 'rl-shade-rsp' or model == 'rl-shade-rsp-train' or model == 'rl-shade-rsp-test' or model == 'rl-shade-rsp-test-greedy' or model == 'rl-shade-rsp-states-5' or model == 'rl-shade-rsp-states-10':
         de = RL_SHADE_RSP(**params)
-    elif model == 'rl-shade-rsp-train':
-        de = RL_SHADE_RSP(**params)
-        de.qlearning.load_qtable(TRAIN_FILE_RL_SHADE_RSP)
-    elif model == 'rl-shade-rsp-test':
-        de = RL_SHADE_RSP(**params)
-        de.qlearning.load_qtable(TRAIN_FILE_RL_SHADE_RSP)
+    elif model == 'rl-shade' or model == 'rl-shade-train' or model == 'rl-shade-test' or model == 'rl-shade-test-greedy' or model == 'rl-shade-interval-02' or model == 'rl-shade-interval-02-train' or model == 'rl-shade-interval-02-test' or model == 'rl-shade-interval-005' or model == 'rl-shade-interval-005-train' or model == 'rl-shade-interval-005-test':
+        de = RL_SHADE(**params)
+    
+    if qtable_path != "":
+        de.qlearning.load_qtable(qtable_path)
     return de
 
-def single_run(D, func_name, func_num, run_id, model='de'):
+def single_run(D, func_name, func_num, run_id, model='de', qtable_in_path="", qtable_out_path=""):
     seed = get_seed(D, func_num, N_RUNS, run_id)
     np.random.seed(seed)
 
@@ -97,7 +74,7 @@ def single_run(D, func_name, func_num, run_id, model='de'):
     else:
         max_fes = MAX_FES_OTHER
 
-    de = get_de(D, func_name, max_fes, model)
+    de = get_de(D, func_name, max_fes, model, qtable_in_path)
 
     k = 0
     fes = count_fes(de.D, k, max_fes)
@@ -116,33 +93,34 @@ def single_run(D, func_name, func_num, run_id, model='de'):
         if de.next_func_evals() > max_fes:
             break
         de.step()
-
-    if model == 'rl-hpsde-train':
-        de.qlearning.save_qtable(TRAIN_FILE)
-    elif model == 'rl-hpsde-n-walks-train':
-        de.qlearning.save_qtable(TRAIN_FILE_N_WALKS)
-    elif model == 'rl-shade-rsp-train':
-        de.qlearning.save_qtable(TRAIN_FILE_RL_SHADE_RSP)
-    elif model == 'qde-train':
-        de.qlearning.save_qtable(TRAIN_FILE_QDE)
+    
+    if qtable_out_path != "":
+        de.qlearning.save_qtable(qtable_out_path)
     scores.append(de.func_evals)
     return scores
 
-def evolve(Ds, funcs_names, model='de'):
-    model_path = f"out/{model}"
-    Path(model_path).mkdir(parents=True, exist_ok=True)
+def evolve(Ds, funcs_names, model='de', qtable_in_number=0):
+    model_out_path = f"out/{model}"
+    Path(model_out_path).mkdir(parents=True, exist_ok=True)
+    qtable_in_path = ""
+    if qtable_in_number > 0:
+        model_name = model.replace('-train', '')
+        model_name = model_name.replace('-test', '')
+        model_in_path = f"in/{model_name}"
+        Path(model_in_path).mkdir(parents=True, exist_ok=True)
+        qtable_in_path = f"{model_in_path}/{model_name}_qtable_{qtable_in_number}.txt"
     start_total = time.perf_counter()
     for D in Ds:
-        results_file_name = f"{model_path}/{model}_{D}.txt"
-        results_file_name_tex = f"{model_path}/{model}_{D}.tex"
+        results_file_name = f"{model_out_path}/{model}_{D}.txt"
+        results_file_name_tex = f"{model_out_path}/{model}_{D}.tex"
         results = []
         columns = ["Best", "Worst", "Median", "Mean", "Std"]
         for id, func_name in enumerate(funcs_names):
             start = time.perf_counter()
-            data = Parallel(n_jobs=N_JOBS)(delayed(single_run)(D, func_name, id + 1, run_id, model) for run_id in range(N_RUNS))
+            data = Parallel(n_jobs=N_JOBS)(delayed(single_run)(D, func_name, id + 1, run_id, model, qtable_in_path) for run_id in range(N_RUNS))
             end = time.perf_counter()
             print(f"Finished D={D} and func_num={id + 1} for model {model} in {end - start} seconds.")
-            file_name = f"{model_path}/{model}_{func_name}_{D}.txt"
+            file_name = f"{model_out_path}/{model}_{func_name}_{D}.txt"
             df = []
             for i in range(17):
                 row = []
@@ -175,8 +153,8 @@ def evolve(Ds, funcs_names, model='de'):
     end_t0 = time.perf_counter()
     t0 = end_t0 - start_t0
 
-    times_file_name = f"{model_path}/{model}_times.txt"
-    times_file_name_tex = f"{model_path}/{model}_times.tex"
+    times_file_name = f"{model_out_path}/{model}_times.txt"
+    times_file_name_tex = f"{model_out_path}/{model}_times.tex"
     times = []
     columns = ['T0', "T1", "T2", "(T2 - T1) / T0"]
     index = Ds
@@ -206,30 +184,81 @@ def evolve(Ds, funcs_names, model='de'):
     end_total = time.perf_counter()
     print(f"Finished for model {model}", "\n\n", f"Total time: {end_total - start_total} seconds")
 
-def train_with_rl(Ds, funcs_names, model):
-    for D in Ds:
-        for func_num, func_name in enumerate(funcs_names):
+def train_model(Ds, funcs_names, runs, model):
+    model_name = model.replace('-train', '')
+    model_name = model_name.replace('-test', '')
+    model_path = f"in/{model_name}"
+    Path(model_path).mkdir(parents=True, exist_ok=True)
+    if runs[0] == 0:
+        de = get_de(Ds[0], funcs_names[0], 200000, model)
+        qtable_0_path = f"{model_path}/{model_name}_qtable_0.txt"
+        de.qlearning.save_qtable(qtable_0_path)
+    start_all_runs = time.perf_counter()
+    for run in runs:
+        qtable_in_path = f"{model_path}/{model_name}_qtable_{run}.txt"
+        qtable_out_path = f"{model_path}/{model_name}_qtable_{run + 1}.txt"
+        for D in Ds:
             start = time.perf_counter()
-            for run in range(N_RUNS):
-                single_run(D, func_name, func_num, run, model) 
+            for func_num, func_name in enumerate(funcs_names):
+                single_run(D, func_name, func_num, run, model, qtable_in_path, qtable_out_path)
+                qtable_in_path = qtable_out_path
             end = time.perf_counter()
-            print(f"Finished D={D} and func={func_name} in {end - start} seconds.")
+            print(f"Finished D={D} and run={run} for model={model} in {end - start} seconds.")
+    end_all_runs = time.perf_counter()
+    print(f"Finished runs from {runs[0]} to {runs[-1]} for model={model} in {end_all_runs - start_all_runs} seconds.")
+
+def train(Ds, funcs_names, runs, models):
+    start = time.perf_counter()
+    Parallel(n_jobs=len(models))(delayed(train_model)(Ds, funcs_names, runs, model) for model in models)
+    end = time.perf_counter()
+    print(f"Finished training in {end - start} seconds.")
 
 
 if __name__ == '__main__':
+    # N_RUNS = 60
     # Ds = [10, 20]
     # cec = "2021"
     # funcs_names = get_cec_funcs(cec)
-    # train_with_rl(Ds, funcs_names, 'rl-hpsde-n-walks-train')
-    # train_with_rl(Ds, funcs_names, 'rl-shade-rsp-train')
-    # train_with_rl(Ds, funcs_names, 'rl-hpsde-train')
-    # train_with_rl(Ds, funcs_names, 'qde-train')
+    # runs = list(range(0, 30))
+    # models = ['rl-shade-train', 'rl-shade-interval-02-train', 'rl-shade-interval-005-train', 'qde-train']
+    # models = ['rl-hpsde-train', 'rl-hpsde-n-walks-train', 'rl-shade-rsp-train']
+    # train(Ds, funcs_names, runs, models)
 
     N_RUNS = 30
     Ds = [10, 20]
     cec = "2022"
     funcs_names = get_cec_funcs(cec)
-    evolve(Ds, funcs_names, 'rl-hpsde-n-walks')
-    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-1')
-    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-2')
-    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-5')
+    # evolve(Ds, funcs_names, 'rl-shade-rsp')
+    # evolve(Ds, funcs_names, 'rl-shade-rsp-states-5')
+    # evolve(Ds, funcs_names, 'rl-shade-rsp-states-10')
+    # evolve(Ds, funcs_names, 'de')
+    # evolve(Ds, funcs_names, 'cde')
+    # evolve(Ds, funcs_names, 'jade')
+    # evolve(Ds, funcs_names, 'shade')
+    # evolve(Ds, funcs_names, 'l-shade')
+    # evolve(Ds, funcs_names, 'l-shade-rsp')
+    # evolve(Ds, funcs_names, 'qde')
+    # evolve(Ds, funcs_names, 'qde-epsilon-greedy')
+    # evolve(Ds, funcs_names, 'qde-actions-qlde')
+    # evolve(Ds, funcs_names, 'rl-hpsde')
+    # evolve(Ds, funcs_names, 'rl-hpsde-n-walks')
+    # evolve(Ds, funcs_names, 'rl-shade-interval-02')
+    # evolve(Ds, funcs_names, 'rl-shade-interval-005')
+    # evolve(Ds, funcs_names, 'rl-shade')
+    # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-1')
+    # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-2')
+    # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-5')
+    # evolve(Ds, funcs_names, 'rl-shade-states-3')
+    # evolve(Ds, funcs_names, 'rl-shade-states-5')
+    # evolve(Ds, funcs_names, 'rl-shade-interval-02-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-interval-005-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'qde-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-hpsde-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-rsp-test', qtable_in_number=30)
+    evolve(Ds, funcs_names, 'rl-shade-test-greedy', qtable_in_number=30)
+    evolve(Ds, funcs_names, 'qde-test-greedy', qtable_in_number=30)
+    evolve(Ds, funcs_names, 'rl-hpsde-test-boltzmann', qtable_in_number=30)
+    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test-boltzmann', qtable_in_number=30)
+    evolve(Ds, funcs_names, 'rl-shade-rsp-test-greedy', qtable_in_number=30)

@@ -54,6 +54,30 @@
             "actions":               "cde",
             "archive_size":          null
         },
+        "qde-train": {
+            "population_size":       50,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "archive_size":          null
+        },
+        "qde-test": {
+            "population_size":       50,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "archive_size":          null
+        },
+        "qde-test-greedy": {
+            "population_size":       50,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "greedy",
+            "actions":               "cde",
+            "archive_size":          null
+        },
         "qde-epsilon-greedy": {
             "population_size":       50,
             "mutation_type":         "rand",
@@ -68,22 +92,6 @@
             "p":                     0.1,
             "selection_strategy":    "boltzmann",
             "actions":               "qlde",
-            "archive_size":          null
-        },
-        "qde-train": {
-            "population_size":       50,
-            "mutation_type":         "rand",
-            "p":                     0.1,
-            "selection_strategy":    "boltzmann",
-            "actions":               "cde",
-            "archive_size":          null
-        },
-        "qde-test": {
-            "population_size":       50,
-            "mutation_type":         "rand",
-            "p":                     0.1,
-            "selection_strategy":    "greedy",
-            "actions":               "cde",
             "archive_size":          null
         },
         "rl-hpsde": {
@@ -119,7 +127,54 @@
             "selection_strategy":    "greedy",
             "archive_size":          null
         },
+        "rl-hpsde-test-boltzmann": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_steps":             200,
+            "step_size":             10,
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "archive_size":          null
+        },
         "rl-hpsde-n-walks": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_walks_scalar":      0.5,
+            "num_steps":             200,
+            "step_size":             5,
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "archive_size":          null
+        },
+        "rl-hpsde-n-walks-train": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_walks_scalar":      0.5,
+            "num_steps":             200,
+            "step_size":             5,
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "archive_size":          null
+        },
+        "rl-hpsde-n-walks-test": {
+            "max_population_scalar": 18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "num_walks_scalar":      0.5,
+            "num_steps":             200,
+            "step_size":             5,
+            "p":                     0.1,
+            "selection_strategy":    "greedy",
+            "archive_size":          null
+        },
+        "rl-hpsde-n-walks-test-boltzmann": {
             "max_population_scalar": 18,
             "min_population_size":   4,
             "max_fes":               null,
@@ -167,35 +222,12 @@
             "selection_strategy":    "boltzmann",
             "archive_size":          null
         },
-        "rl-hpsde-n-walks-train": {
-            "max_population_scalar": 18,
-            "min_population_size":   4,
-            "max_fes":               null,
-            "memory_size":           5,
-            "num_walks":             5,
-            "num_steps":             200,
-            "step_size":             10,
-            "p":                     0.1,
-            "selection_strategy":    "boltzmann",
-            "archive_size":          null
-        },
-        "rl-hpsde-n-walks-test": {
-            "max_population_scalar": 18,
-            "min_population_size":   4,
-            "max_fes":               null,
-            "memory_size":           5,
-            "num_walks":             5,
-            "num_steps":             200,
-            "step_size":             10,
-            "p":                     0.1,
-            "selection_strategy":    "boltzmann",
-            "archive_size":          null
-        },
         "rl-shade-rsp": {
             "max_population_scalar": 75,
             "min_population_size":   4,
             "max_fes":               null,
             "memory_size":           5,
+            "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
             "selection_strategy":    "boltzmann"
         },
@@ -204,6 +236,7 @@
             "min_population_size":   4,
             "max_fes":               null,
             "memory_size":           5,
+            "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
             "selection_strategy":    "boltzmann"
         },
@@ -212,7 +245,145 @@
             "min_population_size":   4,
             "max_fes":               null,
             "memory_size":           5,
+            "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-rsp-test-greedy": {
+            "max_population_scalar": 75,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "n_states":              10,
+            "mutation_type":         "current-to-pbest-r",
+            "selection_strategy":    "greedy"
+        },
+        "rl-shade-rsp-states-3": {
+            "max_population_scalar": 75,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "n_states":              3, 
+            "mutation_type":         "current-to-pbest-r",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-rsp-states-5": {
+            "max_population_scalar": 75,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "memory_size":           5,
+            "n_states":              5,
+            "mutation_type":         "current-to-pbest-r",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.2,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-train": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.2,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-test": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.2,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-test-greedy": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.2,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "greedy"
+        },
+        "rl-shade-interval-01": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.1,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-interval-01-train": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.1,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-interval-01-test": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.1,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-interval-005": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.05,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-interval-005-train": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.05,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann"
+        },
+        "rl-shade-interval-005-test": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.05,       
+            "mutation_type":         "current-to-pbest",
             "selection_strategy":    "boltzmann"
         }
     },
