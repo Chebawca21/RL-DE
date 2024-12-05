@@ -104,8 +104,8 @@ def evolve(Ds, funcs_names, model='de', qtable_in_number=0):
     Path(model_out_path).mkdir(parents=True, exist_ok=True)
     qtable_in_path = ""
     if qtable_in_number > 0:
-        model_name = model.replace('-train', '')
-        model_name = model_name.replace('-test', '')
+        test_index = model.index('-test')
+        model_name = model[:test_index]
         model_in_path = f"in/{model_name}"
         Path(model_in_path).mkdir(parents=True, exist_ok=True)
         qtable_in_path = f"{model_in_path}/{model_name}_qtable_{qtable_in_number}.txt"
@@ -186,7 +186,6 @@ def evolve(Ds, funcs_names, model='de', qtable_in_number=0):
 
 def train_model(Ds, funcs_names, runs, model):
     model_name = model.replace('-train', '')
-    model_name = model_name.replace('-test', '')
     model_path = f"in/{model_name}"
     Path(model_path).mkdir(parents=True, exist_ok=True)
     if runs[0] == 0:
@@ -228,9 +227,6 @@ if __name__ == '__main__':
     Ds = [10, 20]
     cec = "2022"
     funcs_names = get_cec_funcs(cec)
-    # evolve(Ds, funcs_names, 'rl-shade-rsp')
-    # evolve(Ds, funcs_names, 'rl-shade-rsp-states-5')
-    # evolve(Ds, funcs_names, 'rl-shade-rsp-states-10')
     # evolve(Ds, funcs_names, 'de')
     # evolve(Ds, funcs_names, 'cde')
     # evolve(Ds, funcs_names, 'jade')
@@ -238,27 +234,28 @@ if __name__ == '__main__':
     # evolve(Ds, funcs_names, 'l-shade')
     # evolve(Ds, funcs_names, 'l-shade-rsp')
     # evolve(Ds, funcs_names, 'qde')
-    # evolve(Ds, funcs_names, 'qde-epsilon-greedy')
     # evolve(Ds, funcs_names, 'qde-actions-qlde')
+    # evolve(Ds, funcs_names, 'qde-epsilon-greedy')
     # evolve(Ds, funcs_names, 'rl-hpsde')
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks')
-    # evolve(Ds, funcs_names, 'rl-shade-interval-02')
-    # evolve(Ds, funcs_names, 'rl-shade-interval-005')
-    # evolve(Ds, funcs_names, 'rl-shade')
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-1')
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-2')
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-scalar-5')
-    # evolve(Ds, funcs_names, 'rl-shade-states-3')
-    # evolve(Ds, funcs_names, 'rl-shade-states-5')
-    # evolve(Ds, funcs_names, 'rl-shade-interval-02-test', qtable_in_number=30)
-    # evolve(Ds, funcs_names, 'rl-shade-interval-005-test', qtable_in_number=30)
-    # evolve(Ds, funcs_names, 'rl-shade-test', qtable_in_number=30)
-    # evolve(Ds, funcs_names, 'qde-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-rsp')
+    # evolve(Ds, funcs_names, 'rl-shade-rsp-states-5')
+    # evolve(Ds, funcs_names, 'rl-shade-rsp-states-10')
+    # evolve(Ds, funcs_names, 'rl-shade')
+    # evolve(Ds, funcs_names, 'rl-shade-interval-02')
+    # evolve(Ds, funcs_names, 'rl-shade-interval-005')
+    evolve(Ds, funcs_names, 'qde-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-hpsde-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-shade-rsp-test', qtable_in_number=30)
-    evolve(Ds, funcs_names, 'rl-shade-test-greedy', qtable_in_number=30)
-    evolve(Ds, funcs_names, 'qde-test-greedy', qtable_in_number=30)
-    evolve(Ds, funcs_names, 'rl-hpsde-test-boltzmann', qtable_in_number=30)
-    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test-boltzmann', qtable_in_number=30)
-    evolve(Ds, funcs_names, 'rl-shade-rsp-test-greedy', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-interval-02-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-interval-005-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'qde-test-greedy', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-hpsde-test-boltzmann', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test-boltzmann', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-rsp-test-greedy', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-test-greedy', qtable_in_number=30)
