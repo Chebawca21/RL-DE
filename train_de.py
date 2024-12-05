@@ -112,7 +112,6 @@ def evolve(Ds, funcs_names, model='de', qtable_in_number=0):
     start_total = time.perf_counter()
     for D in Ds:
         results_file_name = f"{model_out_path}/{model}_{D}.txt"
-        results_file_name_tex = f"{model_out_path}/{model}_{D}.tex"
         results = []
         columns = ["Best", "Worst", "Median", "Mean", "Std"]
         for id, func_name in enumerate(funcs_names):
@@ -138,7 +137,6 @@ def evolve(Ds, funcs_names, model='de', qtable_in_number=0):
             results.append([best, worst, median, mean, std])
         results = pd.DataFrame(results, columns=columns, index=range(1, len(funcs_names) + 1))
         results.to_string(results_file_name, float_format="{:.8f}".format)
-        results.to_latex(results_file_name_tex, float_format="{:.8f}".format)
     
     start_t0 = time.perf_counter()
     x = 0.55
@@ -154,7 +152,6 @@ def evolve(Ds, funcs_names, model='de', qtable_in_number=0):
     t0 = end_t0 - start_t0
 
     times_file_name = f"{model_out_path}/{model}_times.txt"
-    times_file_name_tex = f"{model_out_path}/{model}_times.tex"
     times = []
     columns = ['T0', "T1", "T2", "(T2 - T1) / T0"]
     index = Ds
@@ -179,7 +176,6 @@ def evolve(Ds, funcs_names, model='de', qtable_in_number=0):
         times.append([t0, t1, t2, (t2 - t1) / t0])
     times = pd.DataFrame(times, columns=columns, index=index)
     times.to_string(times_file_name, float_format="{:.2f}".format)
-    times.to_latex(times_file_name_tex, float_format="{:.2f}".format)
 
     end_total = time.perf_counter()
     print(f"Finished for model {model}", "\n\n", f"Total time: {end_total - start_total} seconds")
