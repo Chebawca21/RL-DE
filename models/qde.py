@@ -9,6 +9,7 @@ class QDE(DifferentialEvolution):
         self.func = func
         self.population_size = population_size
         self.rank_greediness_factor = 3
+        self.func_evals = 0
         if actions == 'qlde':
             actions = [(0.4, 0.7), (0.6, 0.7), (0.8, 0.7), (0.4, 0.9), (0.6, 0.9), (0.8, 0.9), (0.9, 0.9)]
         else:
@@ -16,12 +17,13 @@ class QDE(DifferentialEvolution):
             self.cr_pool = [0.0, 0.5, 1.0]
             actions = list(product(self.F_pool, self.cr_pool))
         self.states = states
-        if self.states == 'rl-hpsde-n-walks':
-            self.num_walks = 0.5 * self.D
+        if self.states == 'rl-hpsde':
+            self.num_walks = int(0.5 * self.D)
             self.num_steps = 200
             self.step_size = 10
             self.walks = []
             self.f_walks = []
+            self.dries = []
             for _ in range(self.num_walks):
                 walk = self.progressive_random_walk()
                 f = np.zeros(self.num_steps)
@@ -29,9 +31,12 @@ class QDE(DifferentialEvolution):
                     f[i] = self.evaluate(point)
                 self.walks.append(walk)
                 self.f_walks.append(f)
+                drie = self.drie(f)
+                self.dries.append(drie)
                 states = [*range(1, 5)]
         elif self.states == 'rl-shade':
             self.n_states = 10
+            self.max_fes = max_fes
             states = [*range(1, self.n_states + 1)]
         else:
             states = [0]
@@ -42,7 +47,6 @@ class QDE(DifferentialEvolution):
             self.archive_size = population_size
         else:
             self.archive_size = archive_size
-        self.func_evals = 0
         self.best_individual = None
         self.best_score = np.inf
         self.population = self.initializePopulation()
@@ -130,12 +134,12 @@ class QDE(DifferentialEvolution):
         return np.max(information_entropies)
 
     def get_state(self):
-        if self.states == 'rl-hpsde-n-walks':
+        if self.states == 'rl-hpsde':
             r = np.random.randint(0, self.num_walks)
             walk = self.walks[r]
             f = self.f_walks[r]
             dfdc = self.dfdc(walk, f)
-            drie = self.drie(f)
+            drie = self.dries[r]
             if drie < 0.5 and dfdc <= 0.15:
                 return 1
             elif drie < 0.5 and dfdc > 0.15:
@@ -155,12 +159,15 @@ class QDE(DifferentialEvolution):
         new_scores = np.zeros(self.population_size)
         prs = self.get_rank_probabilities()
 
+        if self.states == 'rl-hpsde':
+            next_state = self.get_state()
         for i in range(self.population_size):
             F, cr = self.qlearning.get_action(self.state)
             mutant = self.mutation(F, self.mutation_type, current=i, p=self.p, prs=prs)
             candidate = self.binary_crossover(mutant, self.population[i], cr)
             candidate_score = self.evaluate(candidate)
-            next_state = self.get_state()
+            if self.states != 'rl-hpsde':
+                next_state = self.get_state()
             if candidate_score <= self.scores[i]:
                 self.qlearning.update_qtable(self.state, next_state, (F, cr), 1)
                 new_population[i] = candidate
@@ -170,9 +177,12 @@ class QDE(DifferentialEvolution):
                 self.qlearning.update_qtable(self.state, next_state, (F, cr), 0)
                 new_population[i] = self.population[i]
                 new_scores[i] = self.scores[i]
-            self.state = next_state
+            if self.states != 'rl-hpsde':
+                self.state = next_state
 
         self.resize_archive()
+        if self.states == 'rl-hpsde':
+            self.state = next_state
         self.population = new_population
         self.scores = new_scores
         self.update_best_score()

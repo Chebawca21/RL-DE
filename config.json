@@ -48,50 +48,122 @@
         },
         "qde": {
             "population_size":       50,
+            "max_fes":               null,
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "boltzmann",
             "actions":               "cde",
+            "states":                "qde",
             "archive_size":          null
         },
         "qde-train": {
             "population_size":       50,
+            "max_fes":               null,
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "boltzmann",
             "actions":               "cde",
+            "states":                "qde",
             "archive_size":          null
         },
         "qde-test": {
             "population_size":       50,
+            "max_fes":               null,
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "boltzmann",
             "actions":               "cde",
+            "states":                "qde",
             "archive_size":          null
         },
         "qde-test-greedy": {
             "population_size":       50,
+            "max_fes":               null,
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "greedy",
             "actions":               "cde",
+            "states":                "qde",
             "archive_size":          null
         },
         "qde-epsilon-greedy": {
             "population_size":       50,
+            "max_fes":               null,
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "epsilon-greedy",
             "actions":               "cde",
+            "states":                "qde",
             "archive_size":          null
         },
         "qde-actions-qlde": {
             "population_size":       50,
+            "max_fes":               null,
             "mutation_type":         "rand",
             "p":                     0.1,
             "selection_strategy":    "boltzmann",
             "actions":               "qlde",
+            "states":                "qde",
+            "archive_size":          null
+        },
+        "qde-states-rl-hpsde": {
+            "population_size":       50,
+            "max_fes":               null,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "states":                "rl-hpsde",
+            "archive_size":          null
+        },
+        "qde-states-rl-hpsde-train": {
+            "population_size":       50,
+            "max_fes":               null,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "states":                "rl-hpsde",
+            "archive_size":          null
+        },
+        "qde-states-rl-hpsde-test": {
+            "population_size":       50,
+            "max_fes":               null,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "states":                "rl-hpsde",
+            "archive_size":          null
+        },
+        "qde-states-rl-shade": {
+            "population_size":       50,
+            "max_fes":               null,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "states":                "rl-shade",
+            "archive_size":          null
+        },
+        "qde-states-rl-shade-train": {
+            "population_size":       50,
+            "max_fes":               null,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "states":                "rl-shade",
+            "archive_size":          null
+        },
+        "qde-states-rl-shade-test": {
+            "population_size":       50,
+            "max_fes":               null,
+            "mutation_type":         "rand",
+            "p":                     0.1,
+            "selection_strategy":    "boltzmann",
+            "actions":               "cde",
+            "states":                "rl-shade",
             "archive_size":          null
         },
         "rl-hpsde": {
@@ -229,7 +301,8 @@
             "memory_size":           5,
             "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-rsp-train": {
             "max_population_scalar": 75,
@@ -238,7 +311,8 @@
             "memory_size":           5,
             "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-rsp-test": {
             "max_population_scalar": 75,
@@ -247,7 +321,8 @@
             "memory_size":           5,
             "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-rsp-test-greedy": {
             "max_population_scalar": 75,
@@ -256,7 +331,8 @@
             "memory_size":           5,
             "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "greedy"
+            "selection_strategy":    "greedy",
+            "states":                "rl-shade"
         },
         "rl-shade-rsp-states-3": {
             "max_population_scalar": 75,
@@ -265,7 +341,8 @@
             "memory_size":           5,
             "n_states":              3, 
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-rsp-states-5": {
             "max_population_scalar": 75,
@@ -274,7 +351,8 @@
             "memory_size":           5,
             "n_states":              5,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade": {
             "r_n_init":              18,
@@ -285,7 +363,8 @@
             "n_states":              10,
             "actions_interval":      0.2,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-train": {
             "r_n_init":              18,
@@ -296,7 +375,8 @@
             "n_states":              10,
             "actions_interval":      0.2,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-test": {
             "r_n_init":              18,
@@ -307,7 +387,8 @@
             "n_states":              10,
             "actions_interval":      0.2,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-test-greedy": {
             "r_n_init":              18,
@@ -318,7 +399,8 @@
             "n_states":              10,
             "actions_interval":      0.2,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "greedy"
+            "selection_strategy":    "greedy",
+            "states":                "rl-shade"
         },
         "rl-shade-interval-01": {
             "r_n_init":              18,
@@ -329,7 +411,8 @@
             "n_states":              10,
             "actions_interval":      0.1,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-interval-01-train": {
             "r_n_init":              18,
@@ -340,7 +423,8 @@
             "n_states":              10,
             "actions_interval":      0.1,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-interval-01-test": {
             "r_n_init":              18,
@@ -351,7 +435,8 @@
             "n_states":              10,
             "actions_interval":      0.1,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-interval-005": {
             "r_n_init":              18,
@@ -362,7 +447,8 @@
             "n_states":              10,
             "actions_interval":      0.05,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-interval-005-train": {
             "r_n_init":              18,
@@ -373,7 +459,8 @@
             "n_states":              10,
             "actions_interval":      0.05,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
         },
         "rl-shade-interval-005-test": {
             "r_n_init":              18,
@@ -384,7 +471,44 @@
             "n_states":              10,
             "actions_interval":      0.05,       
             "mutation_type":         "current-to-pbest",
-            "selection_strategy":    "boltzmann"
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-shade"
+        },
+        "rl-shade-states-rl-hpsde": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.2,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-hpsde"      
+        },
+        "rl-shade-states-rl-hpsde-train": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.2,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-hpsde"      
+        },
+        "rl-shade-states-rl-hpsde-test": {
+            "r_n_init":              18,
+            "min_population_size":   4,
+            "max_fes":               null,
+            "r_arc":                 2.6,
+            "p":                     0.11,
+            "n_states":              10,
+            "actions_interval":      0.2,       
+            "mutation_type":         "current-to-pbest",
+            "selection_strategy":    "boltzmann",
+            "states":                "rl-hpsde"      
         }
     },
     "max_fes": {
