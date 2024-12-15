@@ -301,8 +301,7 @@
             "memory_size":           5,
             "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann",
-            "states":                "rl-shade"
+            "selection_strategy":    "boltzmann"
         },
         "rl-shade-rsp-train": {
             "max_population_scalar": 75,
@@ -311,8 +310,7 @@
             "memory_size":           5,
             "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann",
-            "states":                "rl-shade"
+            "selection_strategy":    "boltzmann"
         },
         "rl-shade-rsp-test": {
             "max_population_scalar": 75,
@@ -321,8 +319,7 @@
             "memory_size":           5,
             "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann",
-            "states":                "rl-shade"
+            "selection_strategy":    "boltzmann"
         },
         "rl-shade-rsp-test-greedy": {
             "max_population_scalar": 75,
@@ -331,8 +328,7 @@
             "memory_size":           5,
             "n_states":              10,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "greedy",
-            "states":                "rl-shade"
+            "selection_strategy":    "greedy"
         },
         "rl-shade-rsp-states-3": {
             "max_population_scalar": 75,
@@ -341,8 +337,7 @@
             "memory_size":           5,
             "n_states":              3, 
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann",
-            "states":                "rl-shade"
+            "selection_strategy":    "boltzmann"
         },
         "rl-shade-rsp-states-5": {
             "max_population_scalar": 75,
@@ -351,8 +346,7 @@
             "memory_size":           5,
             "n_states":              5,
             "mutation_type":         "current-to-pbest-r",
-            "selection_strategy":    "boltzmann",
-            "states":                "rl-shade"
+            "selection_strategy":    "boltzmann"
         },
         "rl-shade": {
             "r_n_init":              18,
