@@ -215,15 +215,15 @@ def train(Ds, funcs_names, runs, models):
 
 
 if __name__ == '__main__':
-    N_RUNS = 60
-    Ds = [10, 20]
-    cec = "2021"
-    funcs_names = get_cec_funcs(cec)
-    runs = list(range(0, 30))
+    # N_RUNS = 60
+    # Ds = [10, 20]
+    # cec = "2021"
+    # funcs_names = get_cec_funcs(cec)
+    # runs = list(range(0, 30))
     # models = ['rl-shade-train', 'rl-shade-interval-02-train', 'rl-shade-interval-005-train', 'qde-train']
     # models = ['qde-train', 'rl-hpsde-train', 'rl-hpsde-n-walks-train', 'rl-shade-rsp-train', 'rl-shade-train']
-    models = ['qde-states-rl-hpsde-train', 'qde-states-rl-shade-train', 'rl-shade-states-rl-hpsde-train']
-    train(Ds, funcs_names, runs, models)
+    # models = ['qde-states-rl-hpsde-train', 'qde-states-rl-shade-train', 'rl-shade-states-rl-hpsde-train']
+    # train(Ds, funcs_names, runs, models)
 
     N_RUNS = 30
     Ds = [10, 20]
@@ -271,9 +271,9 @@ if __name__ == '__main__':
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test', qtable_in_number=10)
     # evolve(Ds, funcs_names, 'rl-shade-rsp-test', qtable_in_number=10)
     # evolve(Ds, funcs_names, 'rl-shade-test', qtable_in_number=10)
-    evolve(Ds, funcs_names, 'qde-test', qtable_in_number=40)
-    evolve(Ds, funcs_names, 'rl-hpsde-test', qtable_in_number=40)
-    evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test', qtable_in_number=40)
+    # evolve(Ds, funcs_names, 'qde-test', qtable_in_number=40)
+    # evolve(Ds, funcs_names, 'rl-hpsde-test', qtable_in_number=40)
+    # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test', qtable_in_number=40)
     evolve(Ds, funcs_names, 'rl-shade-rsp-test', qtable_in_number=40)
     evolve(Ds, funcs_names, 'rl-shade-test', qtable_in_number=40)
     evolve(Ds, funcs_names, 'qde-test', qtable_in_number=50)
