@@ -56,7 +56,7 @@ def get_de(D, func, max_fes, model='de', qtable_path=""):
         de = RL_HPSDE_N_WALKS(**params)
     elif model == 'rl-shade-rsp' or model == 'rl-shade-rsp-train' or model == 'rl-shade-rsp-test' or model == 'rl-shade-rsp-test-greedy' or model == 'rl-shade-rsp-states-3' or model == 'rl-shade-rsp-states-5':
         de = RL_SHADE_RSP(**params)
-    elif model == 'rl-shade' or model == 'rl-shade-train' or model == 'rl-shade-test' or model == 'rl-shade-test-greedy' or model == 'rl-shade-interval-02' or model == 'rl-shade-interval-02-train' or model == 'rl-shade-interval-02-test' or model == 'rl-shade-interval-005' or model == 'rl-shade-interval-005-train' or model == 'rl-shade-interval-005-test' or model == 'rl-shade-states-rl-hpsde' or model == 'rl-shade-states-rl-hpsde-train' or model == 'rl-shade-states-rl-hpsde-test':
+    elif model == 'rl-shade' or model == 'rl-shade-train' or model == 'rl-shade-test' or model == 'rl-shade-test-greedy' or model == 'rl-shade-interval-01' or model == 'rl-shade-interval-01-train' or model == 'rl-shade-interval-01-test' or model == 'rl-shade-interval-005' or model == 'rl-shade-interval-005-train' or model == 'rl-shade-interval-005-test' or model == 'rl-shade-states-rl-hpsde' or model == 'rl-shade-states-rl-hpsde-train' or model == 'rl-shade-states-rl-hpsde-test':
         de = RL_SHADE(**params)
     
     if qtable_path != "":
@@ -220,7 +220,7 @@ if __name__ == '__main__':
     # cec = "2021"
     # funcs_names = get_cec_funcs(cec)
     # runs = list(range(0, 30))
-    # models = ['rl-shade-train', 'rl-shade-interval-02-train', 'rl-shade-interval-005-train', 'qde-train']
+    # models = ['rl-shade-train', 'rl-shade-interval-01-train', 'rl-shade-interval-005-train', 'qde-train']
     # models = ['qde-train', 'rl-hpsde-train', 'rl-hpsde-n-walks-train', 'rl-shade-rsp-train', 'rl-shade-train']
     # models = ['qde-states-rl-hpsde-train', 'qde-states-rl-shade-train', 'rl-shade-states-rl-hpsde-train']
     # train(Ds, funcs_names, runs, models)
@@ -247,14 +247,14 @@ if __name__ == '__main__':
     # evolve(Ds, funcs_names, 'rl-shade-rsp-states-3')
     # evolve(Ds, funcs_names, 'rl-shade-rsp-states-5')
     # evolve(Ds, funcs_names, 'rl-shade')
-    # evolve(Ds, funcs_names, 'rl-shade-interval-02')
+    # evolve(Ds, funcs_names, 'rl-shade-interval-01')
     # evolve(Ds, funcs_names, 'rl-shade-interval-005')
     # evolve(Ds, funcs_names, 'qde-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-hpsde-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-shade-rsp-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-shade-test', qtable_in_number=30)
-    # evolve(Ds, funcs_names, 'rl-shade-interval-02-test', qtable_in_number=30)
+    # evolve(Ds, funcs_names, 'rl-shade-interval-01-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-shade-interval-005-test', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'qde-test-greedy', qtable_in_number=30)
     # evolve(Ds, funcs_names, 'rl-hpsde-test-boltzmann', qtable_in_number=30)
