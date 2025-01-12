@@ -281,7 +281,7 @@ if __name__ == '__main__':
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test', qtable_in_number=50)
     # evolve(Ds, funcs_names, 'rl-shade-rsp-test', qtable_in_number=50)
     # evolve(Ds, funcs_names, 'rl-shade-test', qtable_in_number=50)
-    evolve(Ds, funcs_names, 'qde-test', qtable_in_number=60)
+    # evolve(Ds, funcs_names, 'qde-test', qtable_in_number=60)
     # evolve(Ds, funcs_names, 'rl-hpsde-test', qtable_in_number=60)
     # evolve(Ds, funcs_names, 'rl-hpsde-n-walks-test', qtable_in_number=60)
     # evolve(Ds, funcs_names, 'rl-shade-rsp-test', qtable_in_number=60)
